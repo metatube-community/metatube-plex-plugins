@@ -1,20 +1,26 @@
 [
   {
     "id": "metatube.server",
-    "label": "Full url of the MetaTube Server, HTTPS protocol is recommended.",
+    "label": "API server",
     "type": "text",
     "default": "https://api.metatube.internal"
   },
   {
     "id": "metatube.token",
-    "label": "Access token for the MetaTube Server, or blank if no token is set by the backend.",
+    "label": "API token",
     "type": "text",
     "default": ""
   },
   {
-    "id": "metatube.enable_trailers",
-    "label": "Add online trailers for videos",
+    "id": "metatube.enable_directors",
+    "label": "Enable directors",
     "type": "bool",
-    "default": "false"
+    "default": "true"
+  },
+  {
+    "id": "metatube.enable_trailers",
+    "label": "Enable trailers",
+    "type": "bool",
+    "default": "true"
   }
 ]
