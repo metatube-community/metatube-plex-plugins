@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+from .constants import PLUGIN_NAME, DEFAULT_USER_AGENT
+
 # plex debugging
 try:
     import plexhints  # noqa: F401
@@ -37,8 +39,7 @@ else:  # the code is running outside of Plex
 def Start():
     HTTP.ClearCache()
     HTTP.CacheTime = CACHE_1DAY
-    HTTP.Headers['User-Agent'] = 'MetaTube.bundle'
-    HTTP.Headers['Accept-Encoding'] = 'gzip'
+    HTTP.Headers['User-Agent'] = DEFAULT_USER_AGENT
 
 
 def ValidatePrefs():
@@ -46,7 +47,7 @@ def ValidatePrefs():
 
 
 class MetaTubeAgent(Agent.Movies):
-    name = 'MetaTube'
+    name = PLUGIN_NAME
     languages = [Locale.Language.English]
     primary_provider = True
     accepts_from = ['com.plexapp.agents.localmedia', 'com.plexapp.agents.lambda', 'com.plexapp.agents.xbmcnfo']
