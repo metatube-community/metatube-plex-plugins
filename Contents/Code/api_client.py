@@ -20,14 +20,14 @@ else:  # the code is running outside of Plex
 
 
 class APIClient:
-    _ACTOR_INFO_API = "/v1/actors"
-    _MOVIE_INFO_API = "/v1/movies"
-    _ACTOR_SEARCH_API = "/v1/actors/search"
-    _MOVIE_SEARCH_API = "/v1/movies/search"
-    _PRIMARY_IMAGE_API = "/v1/images/primary"
-    _THUMB_IMAGE_API = "/v1/images/thumb"
-    _BACKDROP_IMAGE_API = "/v1/images/backdrop"
-    _TRANSLATE_API = "/v1/translate"
+    _ACTOR_INFO_API = '/v1/actors'
+    _MOVIE_INFO_API = '/v1/movies'
+    _ACTOR_SEARCH_API = '/v1/actors/search'
+    _MOVIE_SEARCH_API = '/v1/movies/search'
+    _PRIMARY_IMAGE_API = '/v1/images/primary'
+    _THUMB_IMAGE_API = '/v1/images/thumb'
+    _BACKDROP_IMAGE_API = '/v1/images/backdrop'
+    _TRANSLATE_API = '/v1/translate'
 
     def __init__(self):
         self.http = requests.Session()
@@ -52,3 +52,11 @@ class APIClient:
 
     def translate(self):
         pass
+
+
+def test():
+    pass
+
+
+if __name__ == '__main__':
+    test()
