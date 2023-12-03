@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
-from .constants import PLUGIN_NAME, DEFAULT_USER_AGENT
+from api_client import api
+from constants import PLUGIN_NAME, DEFAULT_USER_AGENT
 
 # plex debugging
 try:
@@ -38,7 +39,7 @@ else:  # the code is running outside of Plex
 
 def Start():
     HTTP.ClearCache()
-    HTTP.CacheTime = CACHE_1DAY
+    HTTP.CacheTime = CACHE_1HOUR
     HTTP.Headers['User-Agent'] = DEFAULT_USER_AGENT
 
 
