@@ -1,24 +1,24 @@
 [
   {
-    "id": "metatube.server",
+    "id": "api_server",
     "label": "API server",
     "type": "text",
     "default": "https://api.metatube.internal"
   },
   {
-    "id": "metatube.token",
+    "id": "api_token",
     "label": "API token",
     "type": "text",
     "default": ""
   },
   {
-    "id": "metatube.enable_directors",
+    "id": "enable_directors",
     "label": "Enable directors",
     "type": "bool",
     "default": "true"
   },
   {
-    "id": "metatube.enable_trailers",
+    "id": "enable_trailers",
     "label": "Enable trailers",
     "type": "bool",
     "default": "true"

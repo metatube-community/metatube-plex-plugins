@@ -6,8 +6,8 @@ except ImportError:  # Python 3
     from urllib.parse import urljoin
 finally:
     from os.path import join as pathjoin
-    from constants import DEFAULT_USER_AGENT
     from requests import Session, PreparedRequest
+    from constants import DEFAULT_USER_AGENT, KEY_API_SERVER, KEY_API_TOKEN
 
 # plex debugging
 try:
@@ -42,7 +42,7 @@ class APIClient:
     def _prepare_url(*paths, **params):
         req = PreparedRequest()
         req.prepare_url(
-            url=urljoin(Prefs['metatube.server'], pathjoin(*paths)),
+            url=urljoin(Prefs[KEY_API_SERVER], pathjoin(*paths)),
             params=params)
         return req.url
 
@@ -52,7 +52,7 @@ class APIClient:
             'User-Agent': DEFAULT_USER_AGENT
         }
         if require_auth:
-            headers['Authorization'] = 'Bearer %s' % Prefs['metatube.token']
+            headers['Authorization'] = 'Bearer %s' % Prefs[KEY_API_TOKEN]
 
         with self.session.get(url=url, headers=headers) as r:
             info = r.json()
