@@ -18,8 +18,8 @@ else:  # the code is running outside of Plex
     from plexhints.prefs_kit import Prefs  # prefs kit
 
 
-class APIException(Exception):
-    pass
+class APIError(Exception):
+    """An API error occurred."""
 
 
 class APIClient:
@@ -60,10 +60,10 @@ class APIClient:
             error = info.get('error')
 
             if error:
-                raise APIException('API request error: %d <%s>' %
-                                   (error['code'], error['message']))
+                raise APIError('API request error: %d <%s>' %
+                               (error['code'], error['message']))
             if not data:
-                raise APIException('Response data field is empty')
+                raise APIError('Response data field is empty')
 
             return data
 
@@ -81,32 +81,32 @@ class APIClient:
                 q=q, provider=provider, fallback=fallback),
             require_auth=True)
 
-    def get_actor_info(self, provider, pid, lazy=None):
+    def get_actor_info(self, provider, id, lazy=None):
         return self._get_data(
             url=self._prepare_url(
-                self._ACTOR_INFO_API, provider, pid,
+                self._ACTOR_INFO_API, provider, id,
                 lazy=lazy),
             require_auth=True)
 
-    def get_movie_info(self, provider, pid, lazy=None):
+    def get_movie_info(self, provider, id, lazy=None):
         return self._get_data(
             url=self._prepare_url(
-                self._MOVIE_INFO_API, provider, pid,
+                self._MOVIE_INFO_API, provider, id,
                 lazy=lazy),
             require_auth=True)
 
-    def get_primary_image_url(self, provider, pid, ratio=None, pos=None):
+    def get_primary_image_url(self, provider, id, ratio=None, pos=None):
         return self._prepare_url(
-            self._PRIMARY_IMAGE_API, provider, pid,
+            self._PRIMARY_IMAGE_API, provider, id,
             ratio=ratio, pos=pos)
 
-    def get_thumb_image_url(self, provider, pid):
+    def get_thumb_image_url(self, provider, id):
         return self._prepare_url(
-            self._THUMB_IMAGE_API, provider, pid)
+            self._THUMB_IMAGE_API, provider, id)
 
-    def get_backdrop_image_url(self, provider, pid):
+    def get_backdrop_image_url(self, provider, id):
         return self._prepare_url(
-            self._BACKDROP_IMAGE_API, provider, pid)
+            self._BACKDROP_IMAGE_API, provider, id)
 
     def translate(self, q, to, engine, **params):
         return self._get_data(
