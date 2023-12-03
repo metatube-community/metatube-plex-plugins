@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
 
-import requests
-
-# import urljoin
 try:  # Python 2
     from urlparse import urljoin
 except ImportError:  # Python 3
     from urllib.parse import urljoin
+finally:
+    from os.path import join as pathjoin
+    from constants import DEFAULT_USER_AGENT
+    from requests import Session, PreparedRequest
 
 # plex debugging
 try:
@@ -14,9 +15,11 @@ try:
 except ImportError:
     pass
 else:  # the code is running outside of Plex
-    from plexhints.core_kit import Core  # core kit
-    from plexhints.log_kit import Log  # log kit
     from plexhints.prefs_kit import Prefs  # prefs kit
+
+
+class APIException(Exception):
+    pass
 
 
 class APIClient:
@@ -30,33 +33,87 @@ class APIClient:
     _TRANSLATE_API = '/v1/translate'
 
     def __init__(self):
-        self.http = requests.Session()
+        self.session = Session()
 
-    def _compose_url(self):
-        pass
+    def __del__(self):
+        self.session.close()
 
-    def _get_data(self):
-        pass
+    @staticmethod
+    def _prepare_url(*paths, **params):
+        req = PreparedRequest()
+        req.prepare_url(
+            url=urljoin(Prefs['metatube.server'], pathjoin(*paths)),
+            params=params)
+        return req.url
 
-    def search_movie(self):
-        pass
+    def _get_data(self, url, require_auth=False):
+        headers = {
+            'Accept': 'application/json',
+            'User-Agent': DEFAULT_USER_AGENT
+        }
+        if require_auth:
+            headers['Authorization'] = 'Bearer %s' % Prefs['metatube.token']
 
-    def search_actor(self):
-        pass
+        with self.session.get(url=url, headers=headers) as r:
+            info = r.json()
+            data = info.get('data')
+            error = info.get('error')
 
-    def get_movie_info(self):
-        pass
+            if error:
+                raise APIException('API request error: %d <%s>' %
+                                   (error['code'], error['message']))
+            if not data:
+                raise APIException('Response data field is empty')
 
-    def get_actor_info(self):
-        pass
+            return data
 
-    def translate(self):
-        pass
+    def search_actor(self, q, provider=None, fallback=None):
+        return self._get_data(
+            url=self._prepare_url(
+                self._ACTOR_SEARCH_API,
+                q=q, provider=provider, fallback=fallback),
+            require_auth=True)
+
+    def search_movie(self, q, provider=None, fallback=None):
+        return self._get_data(
+            url=self._prepare_url(
+                self._MOVIE_SEARCH_API,
+                q=q, provider=provider, fallback=fallback),
+            require_auth=True)
+
+    def get_actor_info(self, provider, pid, lazy=None):
+        return self._get_data(
+            url=self._prepare_url(
+                self._ACTOR_INFO_API, provider, pid,
+                lazy=lazy),
+            require_auth=True)
+
+    def get_movie_info(self, provider, pid, lazy=None):
+        return self._get_data(
+            url=self._prepare_url(
+                self._MOVIE_INFO_API, provider, pid,
+                lazy=lazy),
+            require_auth=True)
+
+    def get_primary_image_url(self, provider, pid, ratio=None, pos=None):
+        return self._prepare_url(
+            self._PRIMARY_IMAGE_API, provider, pid,
+            ratio=ratio, pos=pos)
+
+    def get_thumb_image_url(self, provider, pid):
+        return self._prepare_url(
+            self._THUMB_IMAGE_API, provider, pid)
+
+    def get_backdrop_image_url(self, provider, pid):
+        return self._prepare_url(
+            self._BACKDROP_IMAGE_API, provider, pid)
+
+    def translate(self, q, to, engine, **params):
+        return self._get_data(
+            url=self._prepare_url(
+                self._TRANSLATE_API,
+                q=q, to=to, engine=engine, **params),
+            require_auth=False)
 
 
-def test():
-    pass
-
-
-if __name__ == '__main__':
-    test()
+api = APIClient()
