@@ -2,10 +2,6 @@
 
 ![Plugin Banner](https://metatube-community.github.io/images/banner-dark.png)
 
-## About
-
-MetaTube Plugin for Plex.
-
 ## Documentation
 
 - [Plugin installation](https://metatube-community.github.io/wiki/plugin-installation/)
