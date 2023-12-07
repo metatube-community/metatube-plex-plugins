@@ -5,7 +5,7 @@ try:  # Python 2
 except ImportError:  # Python 3
     from urllib.parse import urljoin
 finally:
-    from os.path import join as pathjoin
+    from posixpath import join as pathjoin
     from requests import Session, PreparedRequest
     from constants import DEFAULT_USER_AGENT, KEY_API_SERVER, KEY_API_TOKEN
 
