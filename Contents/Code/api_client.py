@@ -34,32 +34,28 @@ def parse_date(dt):
     return datetime(year=0, month=0, day=0)
 
 
-class APIError(Exception):
-    """An API error occurred."""
-
-
-class ProviderInfo(object):
+class BaseInfoObject(object):
     def __init__(self, **data):
         self.id = data['id']  # type: str
         self.provider = data['provider']  # type: str
         self.homepage = data['homepage']  # type: str
 
 
-class ActorSearchResult(ProviderInfo):
+class ActorSearchResult(BaseInfoObject):
     def __init__(self, **data):
-        ProviderInfo.__init__(self, **data)
+        BaseInfoObject.__init__(self, **data)
         self.name = data['name']  # type: str
         self.images = data['images']  # type: list[str]
 
 
-class ActorInfo(ActorSearchResult):
+class ActorInfoObject(ActorSearchResult):
     def __init__(self, **data):
         ActorSearchResult.__init__(self, **data)
 
 
-class MovieSearchResult(ProviderInfo):
+class MovieSearchResult(BaseInfoObject):
     def __init__(self, **data):
-        ProviderInfo.__init__(self, **data)
+        BaseInfoObject.__init__(self, **data)
         self.number = data['number']  # type: str
         self.title = data['title']  # type: str
         self.cover_url = data['cover_url']  # type: str
@@ -69,9 +65,13 @@ class MovieSearchResult(ProviderInfo):
         self.actors = data.get('actors', [])  # type: list[str]
 
 
-class MovieInfo(MovieSearchResult):
+class MovieInfoObject(MovieSearchResult):
     def __init__(self, **data):
         MovieSearchResult.__init__(self, **data)
+
+
+class APIError(Exception):
+    """An API error occurred."""
 
 
 class APIClient(object):
