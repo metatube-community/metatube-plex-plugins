@@ -80,6 +80,11 @@ class MovieInfoObject(MovieSearchResult):
         self.preview_video_hls_url = data['preview_video_hls_url']  # type: str
 
 
+class TranslationInfoObject(object):
+    def __init__(self, **data):
+        self.translated_text = data['translated_text']  # type: str
+
+
 class APIError(Exception):
     """An API error occurred."""
 
@@ -173,11 +178,11 @@ class APIClient(object):
             provider, id)
 
     def translate(self, q, to, engine, **params):
-        return self.get_JSON(
+        return TranslationInfoObject(**self.get_JSON(
             url=self.prepare_url(
                 self.TRANSLATE_API,
                 q=q, to=to, engine=engine, **params),
-            require_auth=False)
+            require_auth=False))
 
 
 # Export API
