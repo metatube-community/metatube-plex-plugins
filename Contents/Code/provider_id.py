@@ -13,15 +13,33 @@ class ProviderID(object):
         self.position = position
         self.update = update
 
+    def validate(self):
+        if (isinstance(self.provider, str) and self.provider.strip()) and \
+                (isinstance(self.id, str) and self.id.strip()):
+            return True
+        else:
+            return False
+
     @classmethod
-    def Parse(cls, raw_pid):
-        values = raw_pid.split(':')
+    def Parse(cls, s):
+        values = s.split(':')
+        if (len(values) < 2
+                or not values[0].strip()
+                or not values[1].strip()):
+            raise ValueError('invalid provider format: {0}'.format(s))
         return cls(
-            provider=values[0] if len(values) >= 1 else '',
-            id=unquote(values[1]) if len(values) >= 2 else '',
+            provider=values[0],
+            id=unquote(values[1]),
             position=cls.to_float(values[2]) if len(values) >= 3 else None,
             update=cls.to_bool(values[3]) if len(values) >= 4 else None,
         )
+
+    @classmethod
+    def TryParse(cls, s):
+        try:
+            return cls.Parse(s)
+        except ValueError:
+            return None
 
     @staticmethod
     def to_float(s):
