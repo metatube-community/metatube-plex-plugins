@@ -1,10 +1,13 @@
 # -*- coding: utf-8 -*-
 
 try:  # Python 2
+    import httplib as http_status
     from urlparse import urljoin
 except ImportError:  # Python 3
+    from http import HTTPStatus as http_status
     from urllib.parse import urljoin
 finally:
+    from datetime import datetime
     from posixpath import join as pathjoin
     from requests import Session, PreparedRequest
     from constants import DEFAULT_USER_AGENT, KEY_API_SERVER, KEY_API_TOKEN
@@ -18,8 +21,57 @@ else:  # the code is running outside of Plex
     from plexhints.prefs_kit import Prefs  # prefs kit
 
 
+def parse_date(dt):
+    for fmt in [
+        "%Y-%m-%d %H:%M:%S",
+        "%Y-%m-%d",
+        "%d-%m-%Y",
+    ]:
+        try:
+            return datetime.strptime(dt, fmt)
+        except ValueError:
+            continue
+    return datetime(year=0, month=0, day=0)
+
+
 class APIError(Exception):
     """An API error occurred."""
+
+
+class ProviderInfo(object):
+    def __init__(self, **data):
+        self.id = data['id']  # type: str
+        self.provider = data['provider']  # type: str
+        self.homepage = data['homepage']  # type: str
+
+
+class ActorSearchResult(ProviderInfo):
+    def __init__(self, **data):
+        ProviderInfo.__init__(self, **data)
+        self.name = data['name']  # type: str
+        self.images = data['images']  # type: list[str]
+
+
+class ActorInfo(ActorSearchResult):
+    def __init__(self, **data):
+        ActorSearchResult.__init__(self, **data)
+
+
+class MovieSearchResult(ProviderInfo):
+    def __init__(self, **data):
+        ProviderInfo.__init__(self, **data)
+        self.number = data['number']  # type: str
+        self.title = data['title']  # type: str
+        self.cover_url = data['cover_url']  # type: str
+        self.thumb_url = data['thumb_url']  # type: str
+        self.score = data['score']  # type: float
+        self.release_date = data['release_date']  # type: datetime
+        self.actors = data.get('actors', [])  # type: list[str]
+
+
+class MovieInfo(MovieSearchResult):
+    def __init__(self, **data):
+        MovieSearchResult.__init__(self, **data)
 
 
 class APIClient(object):
@@ -43,7 +95,7 @@ class APIClient(object):
             params=params)
         return req.url
 
-    def get_data(self, url, require_auth=False):
+    def get_JSON(self, url, require_auth=False):
         headers = {
             'Accept': 'application/json',
             'User-Agent': DEFAULT_USER_AGENT
@@ -56,7 +108,7 @@ class APIClient(object):
             data = info.get('data')
             error = info.get('error')
 
-            if error:
+            if r.status_code != http_status.OK and error:
                 raise APIError('API request error: %d <%s>' %
                                (error['code'], error['message']))
             if not data:
@@ -65,28 +117,30 @@ class APIClient(object):
             return data
 
     def search_actor(self, q, provider=None, fallback=None):
-        return self.get_data(
-            url=self.prepare_url(
-                self.ACTOR_SEARCH_API,
-                q=q, provider=provider, fallback=fallback),
-            require_auth=True)
+        return [ActorSearchResult(**data)
+                for data in self.get_JSON(
+                url=self.prepare_url(
+                    self.ACTOR_SEARCH_API,
+                    q=q, provider=provider, fallback=fallback),
+                require_auth=True)]
 
     def search_movie(self, q, provider=None, fallback=None):
-        return self.get_data(
-            url=self.prepare_url(
-                self.MOVIE_SEARCH_API,
-                q=q, provider=provider, fallback=fallback),
-            require_auth=True)
+        return [MovieSearchResult(**data)
+                for data in self.get_JSON(
+                url=self.prepare_url(
+                    self.MOVIE_SEARCH_API,
+                    q=q, provider=provider, fallback=fallback),
+                require_auth=True)]
 
     def get_actor_info(self, provider, id, lazy=None):
-        return self.get_data(
+        return self.get_JSON(
             url=self.prepare_url(
                 self.ACTOR_INFO_API, provider, id,
                 lazy=lazy),
             require_auth=True)
 
     def get_movie_info(self, provider, id, lazy=None):
-        return self.get_data(
+        return self.get_JSON(
             url=self.prepare_url(
                 self.MOVIE_INFO_API, provider, id,
                 lazy=lazy),
@@ -106,7 +160,7 @@ class APIClient(object):
             self.BACKDROP_IMAGE_API, provider, id)
 
     def translate(self, q, to, engine, **params):
-        return self.get_data(
+        return self.get_JSON(
             url=self.prepare_url(
                 self.TRANSLATE_API,
                 q=q, to=to, engine=engine, **params),
