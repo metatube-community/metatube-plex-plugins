@@ -116,7 +116,7 @@ class APIClient(object):
             'User-Agent': DEFAULT_USER_AGENT
         }
         if require_auth:
-            headers['Authorization'] = 'Bearer %s' % Prefs[KEY_API_TOKEN]
+            headers['Authorization'] = 'Bearer {token}'.format(token=Prefs[KEY_API_TOKEN])
 
         with self.session.get(url=url, headers=headers) as r:
             info = r.json()
@@ -124,8 +124,8 @@ class APIClient(object):
             error = info.get('error')
 
             if r.status_code != http_status.OK and error:
-                raise APIError('API request error: %d <%s>' %
-                               (error['code'], error['message']))
+                raise APIError('API request error: {0} <{1}>'.format(
+                    error['code'], error['message']))
             if not data:
                 raise APIError('Response data field is empty')
 
