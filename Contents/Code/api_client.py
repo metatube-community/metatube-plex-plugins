@@ -8,7 +8,6 @@ except ImportError:  # Python 3
     from urllib.parse import urljoin
 finally:
     from datetime import datetime
-    from posixpath import join as pathjoin
     from dateutil.parser import parse as parse_date
     from requests import Session, PreparedRequest
     from constants import DEFAULT_USER_AGENT, KEY_API_SERVER, KEY_API_TOKEN
