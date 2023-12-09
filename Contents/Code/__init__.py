@@ -81,13 +81,15 @@ class MetaTubeAgent(Agent.Movies):
                ):
         position = None
         search_results = []  # type: list[MovieSearchResult]
+        default_query = self.parse_filename(media.filename)
 
-        if not manual:  # issued automatically during scanning
-            search_results = self.api.search_movie(
-                q=self.parse_filename(media.filename))  # filename as default query
+        if not manual:
+            search_results = self.api.search_movie(q=default_query)
         else:
-            try:
-                # exact search by provider and id
+            try:  # exact match by provider and id
+                if not media.year or \
+                        not isinstance(media.year, str):
+                    raise ValueError
                 pid = ProviderID.Parse(
                     media.year,  # HACK: use `year` field as pid input
                 )
@@ -95,7 +97,10 @@ class MetaTubeAgent(Agent.Movies):
                 search_results.append(self.api.get_movie_info(
                     pid.provider, pid.id, pid.update is not True))
             except ValueError:
-                search_results = self.api.search_movie(q=media.name)
+                search_results = self.api.search_movie(
+                    q=default_query if media.openSubtitlesHash  # auto match
+                    else media.name  # with search options
+                )
 
         # TODO: add provider filter here
 
@@ -122,9 +127,9 @@ class MetaTubeAgent(Agent.Movies):
         return results
 
     def update(self,
-               metadata, # type: MetadataItem
-               media, # type: Media.Movie
-               lang, # type: str
-               force=False, # type: bool
+               metadata,  # type: MetadataItem
+               media,  # type: Media.Movie
+               lang,  # type: str
+               force=False,  # type: bool
                ):
         pass
