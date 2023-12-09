@@ -1,7 +1,15 @@
 # -*- coding: utf-8 -*-
 
-from api_client import api
-from constants import PLUGIN_NAME, DEFAULT_USER_AGENT
+from api_client import APIClient, APIError, MovieSearchResult
+from constants import PLUGIN_NAME, DEFAULT_USER_AGENT, LANGUAGES
+from provider_id import ProviderID
+
+try:  # Python 2
+    from urllib import unquote
+except ImportError:  # Python 3
+    from urllib.parse import unquote
+finally:
+    from os.path import basename
 
 # plex debugging
 try:
@@ -39,7 +47,8 @@ else:  # the code is running outside of Plex
 
 def Start():
     HTTP.ClearCache()
-    HTTP.CacheTime = CACHE_1HOUR
+    HTTP.CacheTime = CACHE_1DAY
+    HTTP.Headers['Accept-Encoding'] = 'gzip'
     HTTP.Headers['User-Agent'] = DEFAULT_USER_AGENT
 
 
@@ -49,13 +58,73 @@ def ValidatePrefs():
 
 class MetaTubeAgent(Agent.Movies):
     name = PLUGIN_NAME
-    languages = [Locale.Language.English]
+    languages = LANGUAGES
     primary_provider = True
-    accepts_from = ['com.plexapp.agents.localmedia', 'com.plexapp.agents.lambda', 'com.plexapp.agents.xbmcnfo']
+    accepts_from = ['com.plexapp.agents.localmedia',
+                    'com.plexapp.agents.lambda',
+                    'com.plexapp.agents.xbmcnfo']
     contributes_to = ['com.plexapp.agents.none']
 
-    def search(self, results, media, lang, manual=False):
-        pass
+    def __init__(self, *args, **kwargs):
+        Agent.Movies.__init__(self, *args, **kwargs)
+        self.api = APIClient()
 
-    def update(self, metadata, media, lang, force=False):
+    @staticmethod
+    def parse_filename(filename):
+        return unquote(basename(filename))
+
+    def search(self,
+               results,  # type:
+               media,  # type: Media.Movie
+               lang,  # type: str
+               manual=False,  # type: bool
+               ):
+        position = None
+        search_results = []  # type: list[MovieSearchResult]
+
+        if not manual:  # issued automatically during scanning
+            search_results = self.api.search_movie(
+                q=self.parse_filename(media.filename))  # filename as default query
+        else:
+            try:
+                # exact search by provider and id
+                pid = ProviderID.Parse(
+                    media.year,  # HACK: use `year` field as pid input
+                )
+                position = pid.position  # update position
+                search_results.append(self.api.get_movie_info(
+                    pid.provider, pid.id, pid.update is not True))
+            except ValueError:
+                search_results = self.api.search_movie(q=media.name)
+
+        # TODO: add provider filter here
+
+        if not search_results:
+            Log.Warn("Movie not found: {items}".format(items=vars(media)))
+            return results
+
+        for m in search_results:
+            results.Append(MetadataSearchResult(
+                id=str(ProviderID(
+                    provider=m.provider,
+                    id=m.id,
+                    position=position)),
+                name='[{provider}] {number} {title}'.format(
+                    provider=m.provider,
+                    number=m.number,
+                    title=m.title),
+                year=m.release_date.year if m.release_date.year > 1900 else None,
+                score=int(m.score * 20),
+                lang=Locale.Language.Japanese or lang,
+                # thumb=Proxy.Remote,
+            ))
+
+        return results
+
+    def update(self,
+               metadata, # type: MetadataItem
+               media, # type: Media.Movie
+               lang, # type: str
+               force=False, # type: bool
+               ):
         pass
