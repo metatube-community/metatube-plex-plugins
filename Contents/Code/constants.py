@@ -1,5 +1,20 @@
 # -*- coding: utf-8 -*-
 
+# plex debugging
+try:
+    import plexhints  # noqa: F401
+except ImportError:
+    pass
+else:  # the code is running outside of Plex
+    from plexhints.locale_kit import Locale  # locale kit
+
+LANGUAGES = [
+    Locale.Language.Japanese,
+    Locale.Language.Chinese,
+    Locale.Language.Korean,
+    Locale.Language.English,
+]
+
 PLUGIN_NAME = 'MetaTube'
 DEFAULT_USER_AGENT = '%s.bundle' % PLUGIN_NAME
 
