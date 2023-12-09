@@ -36,9 +36,10 @@ class ProviderID(object):
 
     @classmethod
     def TryParse(cls, s):
+        # noinspection PyBroadException
         try:
             return cls.Parse(s)
-        except ValueError:
+        except:
             return None
 
     @staticmethod
