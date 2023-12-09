@@ -8,13 +8,16 @@ except ImportError:
 else:  # the code is running outside of Plex
     from plexhints.locale_kit import Locale  # locale kit
 
+# Common Languages
 LANGUAGES = [
-    Locale.Language.Japanese,
     Locale.Language.Chinese,
+    Locale.Language.Japanese,
     Locale.Language.Korean,
     Locale.Language.English,
+    Locale.Language.Russian,
 ]
 
+# Plugin Name
 PLUGIN_NAME = 'MetaTube'
 DEFAULT_USER_AGENT = '%s.bundle' % PLUGIN_NAME
 
