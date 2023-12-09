@@ -9,6 +9,7 @@ except ImportError:  # Python 3
 finally:
     from datetime import datetime
     from posixpath import join as pathjoin
+    from dateutil.parser import parse as parse_date
     from requests import Session, PreparedRequest
     from constants import DEFAULT_USER_AGENT, KEY_API_SERVER, KEY_API_TOKEN
 
@@ -19,19 +20,6 @@ except ImportError:
     pass
 else:  # the code is running outside of Plex
     from plexhints.prefs_kit import Prefs  # prefs kit
-
-
-def parse_date(dt):
-    for fmt in [
-        "%Y-%m-%d %H:%M:%S",
-        "%Y-%m-%d",
-        "%d-%m-%Y",
-    ]:
-        try:
-            return datetime.strptime(dt, fmt)
-        except ValueError:
-            continue
-    return datetime(year=0, month=0, day=0)
 
 
 class BaseInfoObject(object):
@@ -51,6 +39,17 @@ class ActorSearchResult(BaseInfoObject):
 class ActorInfoObject(ActorSearchResult):
     def __init__(self, **data):
         ActorSearchResult.__init__(self, **data)
+        self.aliases = data['aliases']  # type: list[str]
+        self.summary = data['summary']  # type: str
+        self.hobby = data['hobby']  # type: str
+        self.skill = data['skill']  # type: str
+        self.height = data['height']  # type: int
+        self.cup_size = data['cup_size']  # type: str
+        self.blood_type = data['blood_type']  # type: str
+        self.measurements = data['measurements']  # type: str
+        self.nationality = data['nationality']  # type: str
+        self.birthday = parse_date(data['birthday'])  # type: datetime
+        self.debut_date = parse_date(data['debut_date'])  # type: datetime
 
 
 class MovieSearchResult(BaseInfoObject):
@@ -61,13 +60,25 @@ class MovieSearchResult(BaseInfoObject):
         self.cover_url = data['cover_url']  # type: str
         self.thumb_url = data['thumb_url']  # type: str
         self.score = data['score']  # type: float
-        self.release_date = data['release_date']  # type: datetime
         self.actors = data.get('actors', [])  # type: list[str]
+        self.release_date = parse_date(data['release_date'])  # type: datetime
 
 
 class MovieInfoObject(MovieSearchResult):
     def __init__(self, **data):
         MovieSearchResult.__init__(self, **data)
+        self.summary = data['summary']  # type: str
+        self.director = data['director']  # type: str
+        self.genres = data['genres']  # type: list[str]
+        self.maker = data['maker']  # type: str
+        self.label = data['label']  # type: str
+        self.series = data['series']  # type: str
+        self.runtime = data['runtime']  # type: int
+        self.big_cover_url = data['big_cover_url']  # type: str
+        self.big_thumb_url = data['big_thumb_url']  # type: str
+        self.preview_images = data['preview_images']  # type: list[str]
+        self.preview_video_url = data['preview_video_url']  # type: str
+        self.preview_video_hls_url = data['preview_video_hls_url']  # type: str
 
 
 class APIError(Exception):
@@ -133,18 +144,18 @@ class APIClient(object):
                 require_auth=True)]
 
     def get_actor_info(self, provider, id, lazy=None):
-        return self.get_JSON(
+        return ActorInfoObject(**self.get_JSON(
             url=self.prepare_url(
                 self.ACTOR_INFO_API, provider, id,
                 lazy=lazy),
-            require_auth=True)
+            require_auth=True))
 
     def get_movie_info(self, provider, id, lazy=None):
-        return self.get_JSON(
+        return MovieInfoObject(**self.get_JSON(
             url=self.prepare_url(
                 self.MOVIE_INFO_API, provider, id,
                 lazy=lazy),
-            require_auth=True)
+            require_auth=True))
 
     def get_primary_image_url(self, provider, id, ratio=None, pos=None):
         return self.prepare_url(
