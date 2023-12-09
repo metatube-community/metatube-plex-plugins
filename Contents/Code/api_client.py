@@ -75,23 +75,23 @@ class APIError(Exception):
 
 
 class APIClient(object):
-    ACTOR_INFO_API = '/v1/actors'
-    MOVIE_INFO_API = '/v1/movies'
+    ACTOR_INFO_API = '/v1/actors/{0}/{1}'
+    MOVIE_INFO_API = '/v1/movies/{0}/{1}'
     ACTOR_SEARCH_API = '/v1/actors/search'
     MOVIE_SEARCH_API = '/v1/movies/search'
-    PRIMARY_IMAGE_API = '/v1/images/primary'
-    THUMB_IMAGE_API = '/v1/images/thumb'
-    BACKDROP_IMAGE_API = '/v1/images/backdrop'
+    PRIMARY_IMAGE_API = '/v1/images/primary/{0}/{1}'
+    THUMB_IMAGE_API = '/v1/images/thumb/{0}/{1}'
+    BACKDROP_IMAGE_API = '/v1/images/backdrop/{0}/{1}'
     TRANSLATE_API = '/v1/translate'
 
     def __init__(self):
         self.session = Session()
 
     @staticmethod
-    def prepare_url(*paths, **params):
+    def prepare_url(tpl, *paths, **params):
         req = PreparedRequest()
         req.prepare_url(
-            url=urljoin(Prefs[KEY_API_SERVER], pathjoin(*paths)),
+            url=urljoin(Prefs[KEY_API_SERVER], tpl.format(*paths)),
             params=params)
         return req.url
 
