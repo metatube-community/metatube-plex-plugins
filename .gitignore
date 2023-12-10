@@ -154,3 +154,7 @@ cython_debug/
 
 # PyCharm
 .idea/
+
+# Test files
+*.sqlite
+*test.py
