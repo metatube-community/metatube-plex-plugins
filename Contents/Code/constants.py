@@ -17,7 +17,10 @@ LANGUAGES = [
     Locale.Language.Russian,
 ]
 
-# Plugin Name
+# Content Rating
+DEFAULT_RATING = 'JP-18+'
+
+# Plugin Consts
 PLUGIN_NAME = 'MetaTube'
 DEFAULT_USER_AGENT = '%s.bundle' % PLUGIN_NAME
 

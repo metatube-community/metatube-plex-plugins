@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from api_client import api, APIError, MovieSearchResult
-from constants import PLUGIN_NAME, DEFAULT_USER_AGENT, LANGUAGES, \
+from constants import PLUGIN_NAME, DEFAULT_USER_AGENT, DEFAULT_RATING, LANGUAGES, \
     KEY_ENABLE_DIRECTORS, KEY_ENABLE_RATINGS, KEY_ENABLE_TRAILERS
 from provider_id import ProviderID
 
@@ -69,6 +69,16 @@ class MetaTubeAgent(Agent.Movies):
     @staticmethod
     def parse_filename(filename):
         return basename(unquote(filename))
+
+    @staticmethod
+    def get_actor_image_url(name):
+        G_FRIENDS = 'GFriends'
+        try:
+            for actor in api.search_actor(q=name, provider=G_FRIENDS, fallback=False):
+                if actor.images:
+                    return actor.images[0]
+        except Exception as e:
+            Log.Warn('Get actor image error: {name} ({error})'.format(name=name, error=e))
 
     def search(self,
                results,  # type:
@@ -140,25 +150,78 @@ class MetaTubeAgent(Agent.Movies):
         m = api.get_movie_info(provider=pid.provider, id=pid.id)
 
         original_title = m.title
+        trailer_url = (m.preview_video_url or
+                       m.preview_video_hls_url)
 
+        # Title:
         metadata.title = '{number} {title}'.format(
             number=m.number,
             title=m.title)
 
-        if Prefs[KEY_ENABLE_RATINGS]:
-            pass
-
-        if Prefs[KEY_ENABLE_DIRECTORS]:
-            pass
-
-        if Prefs[KEY_ENABLE_TRAILERS]:
-            pass
-
-        metadata.genres = m.genres
-
+        # Basic Metadata:
         metadata.summary = m.summary
+        metadata.original_title = original_title
 
-        metadata.studio = m.maker
+        # Content Rating:
+        metadata.content_rating = DEFAULT_RATING
+
+        # Studio:
+        if m.maker.strip():
+            metadata.studio = m.maker
+
+        # Release Date:
+        if m.release_date.year > 1900:
+            metadata.originally_available_at = m.release_date
+            metadata.year = m.release_date.year
+
+        # Duration:
+        if m.runtime:
+            metadata.duration = m.runtime * 60 * 1000  # millisecond
+
+        # Rating Score:
+        if Prefs[KEY_ENABLE_RATINGS] and m.score:
+            metadata.rating = m.score * 2
+
+        # Director:
+        if Prefs[KEY_ENABLE_DIRECTORS] and m.director:
+            director = metadata.directors.new()
+            director.name = m.director
+            metadata.directors.add(director)
+
+        # Trailer:
+        # if Prefs[KEY_ENABLE_TRAILERS] and trailer_url:
+        #     trailer = TrailerObject(
+        #         # url='{plugin}://trailer/{b64url}'.format(
+        #         #     plugin=PLUGIN_NAME.lower(),
+        #         #     b64url=base64.urlsafe_b64encode(trailer_url)
+        #         # ),
+        #         url=trailer_url,
+        #         title='Trailer'
+        #     )
+        #     metadata.extras.add(trailer)
+
+        # Collections:
+        metadata.collections.clear()
+        if m.series.strip():
+            metadata.collections.add(m.series)
+
+        # Genres:
+        metadata.genres.clear()
+        for genre in set(m.genres):
+            metadata.genres.add(genre)
+
+        # Tags:
+        metadata.tags.clear()
+        for tag in {m.maker, m.series, m.label}:
+            if tag.strip():
+                metadata.tags.add(tag)
+
+        # Actors:
+        metadata.roles.clear()
+        for actor in set(m.actors):
+            role = metadata.roles.new()
+            role.name = actor
+            role.photo = self.get_actor_image_url(name=actor)
 
         # Poster Image:
         primary = api.get_primary_image_url(m.provider, m.id, pos=pid.position)
