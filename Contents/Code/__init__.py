@@ -136,14 +136,15 @@ class MetaTubeAgent(Agent.Movies):
             return results
 
         for i, m in enumerate(search_results):
+            pid = ProviderID(
+                provider=m.provider,
+                id=m.id,
+                position=position,
+            )
             search_result = MetadataSearchResult(
-                id=str(ProviderID(
-                    provider=m.provider,
-                    id=m.id,
-                    position=position)),
-                name='[{provider}:{id}] {number}'.format(
-                    provider=m.provider,
-                    id=m.id,
+                id=str(pid),
+                name='[{pid:s}] {number}'.format(
+                    pid=pid,
                     number=m.number),
                 year=(m.release_date.year
                       if m.release_date.year > 1900 else None),
