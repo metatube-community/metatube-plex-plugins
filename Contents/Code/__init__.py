@@ -1,10 +1,14 @@
 # -*- coding: utf-8 -*-
 
 from api_client import api, APIError, MovieSearchResult
-from constants import PLUGIN_NAME, DEFAULT_USER_AGENT, DEFAULT_RATING, DEFAULT_TITLE_TEMPLATE, LANGUAGES, \
+from constants import PLUGIN_NAME, DEFAULT_USER_AGENT, DEFAULT_RATING, \
+    DEFAULT_TITLE_TEMPLATE, CHINESE_SUBTITLE, LANGUAGES, \
     KEY_ENABLE_COLLECTIONS, KEY_ENABLE_DIRECTORS, KEY_ENABLE_RATINGS, KEY_ENABLE_TRAILERS, \
-    KEY_ENABLE_REAL_ACTOR_NAMES
+    KEY_ENABLE_REAL_ACTOR_NAMES, KEY_ENABLE_BADGES, KEY_BADGE_URL, KEY_ENABLE_MOVIE_PROVIDER_FILTER, \
+    KEY_MOVIE_PROVIDER_FILTER, KEY_ENABLE_TITLE_TEMPLATE, KEY_TITLE_TEMPLATE, KEY_ENABLE_ACTOR_SUBSTITUTION, \
+    KEY_ACTOR_SUBSTITUTION, KEY_ENABLE_GENRE_SUBSTITUTION, KEY_GENRE_SUBSTITUTION
 from provider_id import ProviderID
+from utils import parse_table, table_substitute, has_chinese_subtitle
 
 try:  # Python 2
     from urllib import unquote
@@ -67,6 +71,18 @@ class MetaTubeAgent(Agent.Movies):
                     'com.plexapp.agents.xbmcnfo']
     contributes_to = ['com.plexapp.agents.none']
 
+    def __init__(self, *args, **kwargs):
+        super(MetaTubeAgent, self).__init__(*args, **kwargs)
+
+        self.movie_provider_filter = [i.upper() for i in Prefs[KEY_MOVIE_PROVIDER_FILTER].split(',')] \
+            if Prefs[KEY_ENABLE_MOVIE_PROVIDER_FILTER] else []
+
+        self.actor_substitution_table = parse_table(Prefs[KEY_ACTOR_SUBSTITUTION]) \
+            if Prefs[KEY_ENABLE_ACTOR_SUBSTITUTION] else {}
+
+        self.genre_substitution_table = parse_table(Prefs[KEY_GENRE_SUBSTITUTION]) \
+            if Prefs[KEY_ENABLE_GENRE_SUBSTITUTION] else {}
+
     @staticmethod
     def parse_filename(filename):
         return basename(unquote(filename))
@@ -117,7 +133,7 @@ class MetaTubeAgent(Agent.Movies):
                manual=False,  # type: bool
                ):
 
-        # ignore lang param
+        # ignore unused lang param
         _ = lang
 
         position = None
@@ -142,7 +158,14 @@ class MetaTubeAgent(Agent.Movies):
             except ValueError:  # fallback to name based search
                 search_results = api.search_movie(q=media.name)
 
-        # TODO: add provider filter here
+        # apply movie provider filter
+        if Prefs[KEY_ENABLE_MOVIE_PROVIDER_FILTER]:
+            if self.movie_provider_filter:
+                search_results = [i for i in search_results
+                                  if i.provider.upper() in self.movie_provider_filter]
+                search_results.sort(key=lambda i: self.movie_provider_filter.index(i.provider.upper()))
+            else:
+                Log.Warn('Movie provider filter enabled but never used')
 
         if not search_results:
             Log.Warn('Movie not found: {items}'.format(items=vars(media)))
@@ -189,16 +212,42 @@ class MetaTubeAgent(Agent.Movies):
         m = api.get_movie_info(provider=pid.provider, id=pid.id)
 
         original_title = m.title
-        trailer_url = (m.preview_video_url or
-                       m.preview_video_hls_url)
 
+        # Chinese Subtitle:
+        chinese_subtitle_on = False
+        if media.filename and has_chinese_subtitle(unquote(media.filename)):
+            chinese_subtitle_on = True
+            m.genres.append(CHINESE_SUBTITLE)
+
+        # Apply Preferences:
         if Prefs[KEY_ENABLE_REAL_ACTOR_NAMES]:
             self.convert_to_real_actor_names(m)
 
+        if Prefs[KEY_ENABLE_ACTOR_SUBSTITUTION]:
+            m.actors = table_substitute(self.actor_substitution_table, m.actors)
+
+        if Prefs[KEY_ENABLE_GENRE_SUBSTITUTION]:
+            m.genres = table_substitute(self.genre_substitution_table, m.genres)
+
+        # TODO: Translate Here
+
         # Title:
-        metadata.title = '{number} {title}'.format(
+        metadata.title = (Prefs[KEY_TITLE_TEMPLATE]
+                          if Prefs[KEY_ENABLE_TITLE_TEMPLATE]
+                          else DEFAULT_TITLE_TEMPLATE).format(
+            provider=m.provider,
+            id=m.id,
             number=m.number,
-            title=m.title)
+            title=m.title,
+            series=m.series,
+            maker=m.maker,
+            label=m.label,
+            director=m.director,
+            actors=(' '.join(m.actors)),
+            first_actor=(m.actors[0] if m.actors else ''),
+            year=m.release_date.year,
+            date=m.release_date.strftime('%Y-%m-%d'),
+        )
 
         # Basic Metadata:
         metadata.summary = m.summary
@@ -257,8 +306,12 @@ class MetaTubeAgent(Agent.Movies):
             role.name = actor
             role.photo = self.get_actor_image_url(name=actor)
 
+        # CHS Badge:
+        badge = Prefs[KEY_BADGE_URL] \
+            if Prefs[KEY_ENABLE_BADGES] and chinese_subtitle_on else None
+
         # Poster Image:
-        primary = api.get_primary_image_url(m.provider, m.id, pos=pid.position)
+        primary = api.get_primary_image_url(m.provider, m.id, pos=pid.position, badge=badge)
         # noinspection PyBroadException
         try:
             metadata.posters[primary] = Proxy.Media(api.get_content(url=primary))

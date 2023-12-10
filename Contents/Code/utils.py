@@ -57,3 +57,8 @@ def has_external_chinese_subtitle(video_name, *filenames):
         if r.search(filename) and r.sub('', filename) == basename:
             return True
     return False
+
+
+def has_chinese_subtitle(video_name):
+    return has_embedded_chinese_subtitle(video_name) or \
+        has_external_chinese_subtitle(video_name)
