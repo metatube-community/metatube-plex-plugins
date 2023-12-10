@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from api_client import APIClient, APIError, MovieSearchResult
+from api_client import api, APIError, MovieSearchResult
 from constants import PLUGIN_NAME, DEFAULT_USER_AGENT, LANGUAGES
 from provider_id import ProviderID
 
@@ -65,10 +65,6 @@ class MetaTubeAgent(Agent.Movies):
                     'com.plexapp.agents.xbmcnfo']
     contributes_to = ['com.plexapp.agents.none']
 
-    def __init__(self, *args, **kwargs):
-        Agent.Movies.__init__(self, *args, **kwargs)
-        self.api = APIClient()
-
     @staticmethod
     def parse_filename(filename):
         return basename(unquote(filename))
@@ -85,7 +81,7 @@ class MetaTubeAgent(Agent.Movies):
         # issued by scanning or auto match
         if (not manual or media.openSubtitlesHash) \
                 and media.filename:
-            search_results = self.api.search_movie(
+            search_results = api.search_movie(
                 q=self.parse_filename(media.filename))
         else:
             try:  # exact match by provider and id
@@ -96,15 +92,15 @@ class MetaTubeAgent(Agent.Movies):
                     media.year,  # HACK: use `year` field as pid input
                 )
                 position = pid.position  # update position
-                search_results.append(self.api.get_movie_info(
+                search_results.append(api.get_movie_info(
                     pid.provider, pid.id, pid.update is not True))
             except ValueError:  # fallback to name based search
-                search_results = self.api.search_movie(q=media.name)
+                search_results = api.search_movie(q=media.name)
 
         # TODO: add provider filter here
 
         if not search_results:
-            Log.Warn("Movie not found: {items}".format(items=vars(media)))
+            Log.Warn('Movie not found: {items}'.format(items=vars(media)))
             return results
 
         for m in search_results:
@@ -117,10 +113,11 @@ class MetaTubeAgent(Agent.Movies):
                     provider=m.provider,
                     number=m.number,
                     title=m.title),
-                year=m.release_date.year if m.release_date.year > 1900 else None,
-                score=int(m.score * 20),
+                year=(m.release_date.year
+                      if m.release_date.year > 1900 else None),
+                score=round(m.score * 20),
                 lang=Locale.Language.Japanese or lang,
-                thumb=self.api.get_primary_image_url(
+                thumb=api.get_primary_image_url(
                     m.provider, m.id,
                     url=m.thumb_url,
                     pos=1.0, auto=True),
@@ -129,10 +126,41 @@ class MetaTubeAgent(Agent.Movies):
         return results
 
     def update(self,
-               metadata,  # type: MetadataItem
+               metadata,  # type: Movie
                media,  # type: Media.Movie
                lang,  # type: str
                force=False,  # type: bool
                ):
 
-        pass
+        pid = ProviderID.Parse(metadata.id)
+
+        # if not pid or not pid.validate():
+        #     self.search([], media, lang, manual=True)
+
+        Log.Info('Get movie info: {0:s}'.format(pid))
+
+        m = api.get_movie_info(provider=pid.provider, id=pid.id)
+
+        metadata.title = '{number} {title}'.format(
+            number=m.number,
+            title=m.title)
+
+        metadata.genres = m.genres
+
+        metadata.summary = m.summary
+
+        metadata.studio = m.maker
+
+        try:
+            primary = api.get_primary_image_url(m.provider, m.id)
+            metadata.posters[primary] = Proxy.Media(api.get_DATA(url=primary))
+        except:
+            pass
+
+        try:
+            backdrop = api.get_backdrop_image_url(m.provider, m.id)
+            metadata.art[backdrop] = Proxy.Media(api.get_DATA(url=backdrop))
+        except:
+            pass
+
+        return metadata
