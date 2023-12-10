@@ -188,7 +188,7 @@ class MetaTubeAgent(Agent.Movies):
 
     def update(self,
                metadata,  # type: Movie
-               media,  # type: Media.Movie
+               media,  # type: Media
                lang,  # type: str
                force=False,  # type: bool
                ):
@@ -202,20 +202,27 @@ class MetaTubeAgent(Agent.Movies):
 
         original_title = m.title
 
-        # Chinese Subtitle:
+        # Inline magic function:
+        def get_media_files(obj):
+            if hasattr(obj, 'all_parts'):
+                return [part.file for part in obj.all_parts() if hasattr(part, 'file')]
+
+        # Detect Chinese Subtitles:
         chinese_subtitle_on = False
-        if media.filename and has_chinese_subtitle(unquote(media.filename)):
-            chinese_subtitle_on = True
-            m.genres.append(CHINESE_SUBTITLE)
+        for filename in get_media_files(media) or ():
+            if has_chinese_subtitle(filename):
+                chinese_subtitle_on = True
+                m.genres.append(CHINESE_SUBTITLE)
+                break
 
         # Apply Preferences:
         if Prefs[KEY_ENABLE_REAL_ACTOR_NAMES]:
             self.convert_to_real_actor_names(m)
 
-        if Prefs[KEY_ENABLE_ACTOR_SUBSTITUTION]:
+        if Prefs[KEY_ENABLE_ACTOR_SUBSTITUTION] and Prefs[KEY_ACTOR_SUBSTITUTION]:
             m.actors = table_substitute(parse_table(Prefs[KEY_ACTOR_SUBSTITUTION]), m.actors)
 
-        if Prefs[KEY_ENABLE_GENRE_SUBSTITUTION]:
+        if Prefs[KEY_ENABLE_GENRE_SUBSTITUTION] and Prefs[KEY_GENRE_SUBSTITUTION]:
             m.genres = table_substitute(parse_table(Prefs[KEY_GENRE_SUBSTITUTION]), m.genres)
 
         # TODO: Translate Here
