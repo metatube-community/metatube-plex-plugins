@@ -86,7 +86,15 @@ class MetaTubeAgent(Agent.Movies):
 
     @staticmethod
     def convert_to_real_actor_names(m):
-        if m.provider.upper() not in ('DUGA', 'FANZA', 'GETCHU', 'MGS', 'PCOLLE'):
+
+        AV_BASE_SUPPORTED_PROVIDERS = (
+            'DUGA',
+            'FANZA',
+            'GETCHU',
+            'MGS',
+            'PCOLLE'
+        )
+        if m.provider.upper() not in AV_BASE_SUPPORTED_PROVIDERS:
             return
 
         AV_BASE = 'AvBase'
