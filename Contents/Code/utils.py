@@ -16,6 +16,10 @@ def parse_date(s):
         return datetime(1, 1, 1)  # default value
 
 
+def parse_list(s):
+    return [i.strip().upper() for i in s.split(',') if i.strip()]
+
+
 def parse_table(s):
     table = {}
     for kv in s.split(','):
