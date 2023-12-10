@@ -3,6 +3,7 @@ import os
 import re
 from datetime import datetime
 from os import path
+from base64 import urlsafe_b64decode
 
 from constants import CHINESE_SUBTITLE
 
@@ -23,9 +24,11 @@ def parse_list(s):
     return [i.strip().upper() for i in s.split(',') if i.strip()]
 
 
-def parse_table(s):
+def parse_table(s, sep=',', b64=False):
+    if b64:
+        s = urlsafe_b64decode(s).decode('utf-8')
     table = {}
-    for kv in s.split(','):
+    for kv in s.split(sep=sep):
         if kv.count('=') > 0 and not kv.startswith('='):
             i = kv.find('=')
             table[kv[:i].upper()] = kv[i + 1:]

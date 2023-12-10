@@ -220,10 +220,12 @@ class MetaTubeAgent(Agent.Movies):
             self.convert_to_real_actor_names(m)
 
         if Prefs[KEY_ENABLE_ACTOR_SUBSTITUTION] and Prefs[KEY_ACTOR_SUBSTITUTION]:
-            m.actors = table_substitute(parse_table(Prefs[KEY_ACTOR_SUBSTITUTION]), m.actors)
+            m.actors = table_substitute(parse_table(Prefs[KEY_ACTOR_SUBSTITUTION],
+                                                    sep='\n', b64=True), m.actors)
 
         if Prefs[KEY_ENABLE_GENRE_SUBSTITUTION] and Prefs[KEY_GENRE_SUBSTITUTION]:
-            m.genres = table_substitute(parse_table(Prefs[KEY_GENRE_SUBSTITUTION]), m.genres)
+            m.genres = table_substitute(parse_table(Prefs[KEY_GENRE_SUBSTITUTION],
+                                                    sep='\n', b64=True), m.genres)
 
         # TODO: Translate Here
 
