@@ -85,7 +85,7 @@
   },
   {
     "id": "actor_substitution_table",
-    "label": "Actor substitution table",
+    "label": "Actor substitution table (Base64 encoding required)",
     "type": "text",
     "default": ""
   },
@@ -97,7 +97,7 @@
   },
   {
     "id": "genre_substitution_table",
-    "label": "Genre substitution table",
+    "label": "Genre substitution table (Base64 encoding required)",
     "type": "text",
     "default": ""
   }
