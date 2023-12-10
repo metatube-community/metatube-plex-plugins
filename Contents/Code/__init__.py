@@ -102,7 +102,12 @@ class MetaTubeAgent(Agent.Movies):
         except Exception as e:
             Log.Warn('Convert to real actor names error: {number} ({error})'.format(number=m.number, error=e))
 
-    def search(self, results, media, lang, manual=False):
+    def search(self,
+               results,  # type: SearchResult
+               media,  # type: Media.Movie
+               lang,  # type: str
+               manual=False,  # type: bool
+               ):
         position = None
         search_results = []  # type: list[MovieSearchResult]
 
@@ -132,15 +137,15 @@ class MetaTubeAgent(Agent.Movies):
             return results
 
         for i, m in enumerate(search_results):
-            results.Append(MetadataSearchResult(
+            search_result = MetadataSearchResult(
                 id=str(ProviderID(
                     provider=m.provider,
                     id=m.id,
                     position=position)),
-                name='[{provider}] {number} {title}'.format(
+                name='[{provider}:{id}] {number}'.format(
                     provider=m.provider,
-                    number=m.number,
-                    title=m.title),
+                    id=m.id,
+                    number=m.number),
                 year=(m.release_date.year
                       if m.release_date.year > 1900 else None),
                 score=int(100 - i),
@@ -149,7 +154,11 @@ class MetaTubeAgent(Agent.Movies):
                     m.provider, m.id,
                     url=m.thumb_url,
                     pos=1.0, auto=True),
-            ))
+            )
+            # HACK: force to add type and summary
+            search_result.type = 'movie'
+            search_result.summary = m.title
+            results.Append(search_result)
 
         return results
 
