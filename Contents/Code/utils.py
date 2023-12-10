@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
 import os
 import re
+from base64 import b64decode
 from datetime import datetime
-from os import path
-from base64 import urlsafe_b64decode
 
 from constants import CHINESE_SUBTITLE
 
@@ -26,9 +25,10 @@ def parse_list(s):
 
 def parse_table(s, sep=',', b64=False):
     if b64:
-        s = urlsafe_b64decode(s).decode('utf-8')
+        s = b64decode(s).decode('utf-8')
     table = {}
-    for kv in s.split(sep=sep):
+    for kv in s.split(sep):
+        kv = kv.strip()  # trim all whitespaces
         if kv.count('=') > 0 and not kv.startswith('='):
             i = kv.find('=')
             table[kv[:i].upper()] = kv[i + 1:]
@@ -48,8 +48,8 @@ def has_tag(s, *tags):
 
 
 def has_embedded_chinese_subtitle(video_name):
-    name, ext = path.splitext(
-        path.basename(video_name))
+    name, ext = os.path.splitext(
+        os.path.basename(video_name))
     if ext.lower() not in VIDEO_EXTENSIONS:
         return False
 
@@ -58,12 +58,12 @@ def has_embedded_chinese_subtitle(video_name):
 
 def has_external_chinese_subtitle(video_name, *filenames):
     if not filenames:
-        if not path.exists(video_name):
+        if not os.path.exists(video_name):
             return False
-        return has_external_chinese_subtitle(video_name, *os.listdir(path.dirname(video_name)))
+        return has_external_chinese_subtitle(video_name, *os.listdir(os.path.dirname(video_name)))
 
-    basename, ext = path.splitext(
-        path.basename(video_name))
+    basename, ext = os.path.splitext(
+        os.path.basename(video_name))
     if ext.lower() not in VIDEO_EXTENSIONS:
         return False
 
