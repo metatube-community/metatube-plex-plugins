@@ -7,8 +7,8 @@ except ImportError:  # Python 3
     from http import HTTPStatus as http_status
     from urllib.parse import urljoin
 finally:
+    from re import findall
     from datetime import datetime
-    from dateutil.parser import parse as parse_date
     from requests import Session, PreparedRequest
     from constants import DEFAULT_USER_AGENT, KEY_API_SERVER, KEY_API_TOKEN
 
@@ -19,6 +19,16 @@ except ImportError:
     pass
 else:  # the code is running outside of Plex
     from plexhints.prefs_kit import Prefs  # prefs kit
+
+
+def parse_date(s):
+    # noinspection PyBroadException
+    try:
+        return datetime.strptime(
+            findall(r'\d{4}-\d{2}-\d{2}', s)[0],
+            '%Y-%m-%d')
+    except:
+        return datetime(1, 1, 1)
 
 
 class BaseInfoObject(object):
