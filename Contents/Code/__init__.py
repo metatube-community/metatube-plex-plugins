@@ -2,7 +2,7 @@
 
 from api_client import api, APIError, MovieSearchResult
 from constants import PLUGIN_NAME, DEFAULT_USER_AGENT, DEFAULT_RATING, LANGUAGES, \
-    KEY_ENABLE_DIRECTORS, KEY_ENABLE_RATINGS, KEY_ENABLE_TRAILERS
+    KEY_ENABLE_DIRECTORS, KEY_ENABLE_RATINGS, KEY_ENABLE_TRAILERS, KEY_ENABLE_REAL_ACTOR_NAMES
 from provider_id import ProviderID
 
 try:  # Python 2
@@ -72,7 +72,9 @@ class MetaTubeAgent(Agent.Movies):
 
     @staticmethod
     def get_actor_image_url(name):
+
         G_FRIENDS = 'GFriends'
+
         try:
             for actor in api.search_actor(q=name, provider=G_FRIENDS, fallback=False):
                 if actor.images:
@@ -80,12 +82,25 @@ class MetaTubeAgent(Agent.Movies):
         except Exception as e:
             Log.Warn('Get actor image error: {name} ({error})'.format(name=name, error=e))
 
-    def search(self,
-               results,  # type:
-               media,  # type: Media.Movie
-               lang,  # type: str
-               manual=False,  # type: bool
-               ):
+    @staticmethod
+    def convert_to_real_actor_names(m):
+        if m.provider.upper() not in ("DUGA", "FANZA", "GETCHU", "MGS", "PCOLLE"):
+            return
+
+        AV_BASE = 'AvBase'
+
+        try:
+            results = api.search_movie(q=m.id, provider=AV_BASE)
+            if not results:
+                Log.Warn('Movie not found on AVBASE: {id}'.format(id=m.id))
+            elif len(results) > 1:
+                Log.Warn('Multiple movies found on AVBASE: {id}'.format(id=m.id))
+            elif results[0].actors:
+                m.actors = results[0].actors
+        except Exception as e:
+            Log.Warn('Convert to real actor names error: {number} ({error})'.format(number=m.number, error=e))
+
+    def search(self, results, media, lang, manual=False):
         position = None
         search_results = []  # type: list[MovieSearchResult]
 
@@ -147,11 +162,15 @@ class MetaTubeAgent(Agent.Movies):
 
         Log.Info('Get movie info: {0:s}'.format(pid))
 
+        # API Request:
         m = api.get_movie_info(provider=pid.provider, id=pid.id)
 
         original_title = m.title
         trailer_url = (m.preview_video_url or
                        m.preview_video_hls_url)
+
+        if Prefs[KEY_ENABLE_REAL_ACTOR_NAMES]:
+            self.convert_to_real_actor_names(m)
 
         # Title:
         metadata.title = '{number} {title}'.format(
@@ -184,6 +203,7 @@ class MetaTubeAgent(Agent.Movies):
 
         # Director:
         if Prefs[KEY_ENABLE_DIRECTORS] and m.director:
+            metadata.directors.clear()
             director = metadata.directors.new()
             director.name = m.director
             metadata.directors.add(director)

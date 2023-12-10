@@ -19,7 +19,7 @@
   },
   {
     "id": "enable_ratings",
-    "label": "Enable Ratings",
+    "label": "Enable ratings",
     "type": "bool",
     "default": "true"
   },
@@ -28,5 +28,11 @@
     "label": "Enable trailers",
     "type": "bool",
     "default": "true"
+  },
+  {
+    "id": "enable_real_actor_names",
+    "label": "Enable real actor names",
+    "type": "bool",
+    "default": "false"
   }
 ]
