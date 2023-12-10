@@ -212,18 +212,6 @@ class MetaTubeAgent(Agent.Movies):
             director.name = m.director
             metadata.directors.add(director)
 
-        # Trailer:
-        # if Prefs[KEY_ENABLE_TRAILERS] and trailer_url:
-        #     trailer = TrailerObject(
-        #         # url='{plugin}://trailer/{b64url}'.format(
-        #         #     plugin=PLUGIN_NAME.lower(),
-        #         #     b64url=base64.urlsafe_b64encode(trailer_url)
-        #         # ),
-        #         url=trailer_url,
-        #         title='Trailer'
-        #     )
-        #     metadata.extras.add(trailer)
-
         # Collections:
         if Prefs[KEY_ENABLE_COLLECTIONS] and m.series.strip():
             metadata.collections.clear()
@@ -262,5 +250,20 @@ class MetaTubeAgent(Agent.Movies):
             metadata.art[backdrop] = Proxy.Media(api.get_content(url=backdrop))
         except:
             Log.Warn('Failed to load art image: {backdrop}'.format(backdrop=backdrop))
+
+        # Extras:
+        metadata.extras.clear()
+
+        # Trailer:
+        # if Prefs[KEY_ENABLE_TRAILERS] and trailer_url:
+        #     trailer = TrailerObject(
+        #         # url='{plugin}://trailer/{b64url}'.format(
+        #         #     plugin=PLUGIN_NAME.lower(),
+        #         #     b64url=base64.urlsafe_b64encode(trailer_url)
+        #         # ),
+        #         url=trailer_url,
+        #         title='Trailer'
+        #     )
+        #     metadata.extras.add(trailer)
 
         return metadata
