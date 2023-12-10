@@ -200,7 +200,10 @@ class MetaTubeAgent(Agent.Movies):
 
         # Rating Score:
         if Prefs[KEY_ENABLE_RATINGS] and m.score:
-            metadata.rating = m.score * 2
+            metadata.rating = m.score * 2.0
+            metadata.rating_image = None
+            metadata.audience_rating = 0.0
+            metadata.audience_rating_image = None
 
         # Director:
         if Prefs[KEY_ENABLE_DIRECTORS] and m.director:
