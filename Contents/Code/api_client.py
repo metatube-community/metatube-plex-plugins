@@ -42,7 +42,7 @@ class ActorInfoObject(ActorSearchResult):
         self.summary = data['summary']  # type: str
         self.hobby = data['hobby']  # type: str
         self.skill = data['skill']  # type: str
-        self.height = data['height']  # type: int
+        self.height = int(data['height'])  # type: int
         self.cup_size = data['cup_size']  # type: str
         self.blood_type = data['blood_type']  # type: str
         self.measurements = data['measurements']  # type: str
@@ -58,7 +58,7 @@ class MovieSearchResult(BaseInfoObject):
         self.title = data['title']  # type: str
         self.cover_url = data['cover_url']  # type: str
         self.thumb_url = data['thumb_url']  # type: str
-        self.score = data['score']  # type: float
+        self.score = float(data['score'])  # type: float
         self.actors = data.get('actors', [])  # type: list[str]
         self.release_date = parse_date(data['release_date'])  # type: datetime
 
