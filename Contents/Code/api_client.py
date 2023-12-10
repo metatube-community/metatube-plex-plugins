@@ -161,11 +161,16 @@ class APIClient(object):
                 lazy=lazy),
             require_auth=True))
 
-    def get_primary_image_url(self, provider, id, ratio=None, pos=None):
+    def get_primary_image_url(self, provider, id,
+                              url=None,
+                              ratio=None,
+                              pos=None,
+                              auto=None,
+                              badge=None):
         return self.prepare_url(
             self.PRIMARY_IMAGE_API,
             provider, id,
-            ratio=ratio, pos=pos)
+            url=url, ratio=ratio, pos=pos, auto=auto, badge=badge)
 
     def get_thumb_image_url(self, provider, id):
         return self.prepare_url(
