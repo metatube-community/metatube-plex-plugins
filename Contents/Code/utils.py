@@ -6,6 +6,9 @@ from os import path
 
 from constants import CHINESE_SUBTITLE
 
+VIDEO_EXTENSIONS = ('.mp4', '.wmv', '.avi', '.rm', '.rmvb', '.m4v', 'webm',
+                    '.ogg', '.mkv', '.flv', '.mov', '.3gp', '.ts', '.mpg')
+
 
 def parse_date(s):
     # noinspection PyBroadException
@@ -35,14 +38,19 @@ def table_substitute(table, items):
 
 def has_tag(s, *tags):
     values = [i.upper() for i in re.split(r'[-_\s]', s)]
-    return any(tag in values for tag in tags)
+    for tag in tags:
+        if tag.upper() in values:
+            return True
+    return False
 
 
 def has_embedded_chinese_subtitle(video_name):
-    name, _ = path.splitext(
+    name, ext = path.splitext(
         path.basename(video_name))
+    if ext.lower() not in VIDEO_EXTENSIONS:
+        return False
 
-    return CHINESE_SUBTITLE in name or has_tag(name, 'C', 'UC', 'CH')
+    return CHINESE_SUBTITLE in name or has_tag(name, 'C', 'UC', 'ch')
 
 
 def has_external_chinese_subtitle(video_name, *filenames):
@@ -51,8 +59,11 @@ def has_external_chinese_subtitle(video_name, *filenames):
             return False
         return has_external_chinese_subtitle(video_name, *os.listdir(path.dirname(video_name)))
 
-    basename, _ = path.splitext(
+    basename, ext = path.splitext(
         path.basename(video_name))
+    if ext.lower() not in VIDEO_EXTENSIONS:
+        return False
+
     r = re.compile(
         r'\.(chinese|ch[ist]|zh(-(cn|hk|tw|hans|hant))?)\.(ass|srt|ssa|stl|sub|vid|vtt)$', re.IGNORECASE)
     for filename in filenames:
