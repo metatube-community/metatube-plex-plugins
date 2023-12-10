@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from api_client import api, APIError, MovieSearchResult
-from constants import PLUGIN_NAME, DEFAULT_USER_AGENT, DEFAULT_RATING, LANGUAGES, \
+from constants import PLUGIN_NAME, DEFAULT_USER_AGENT, DEFAULT_RATING, DEFAULT_TITLE_TEMPLATE, LANGUAGES, \
     KEY_ENABLE_COLLECTIONS, KEY_ENABLE_DIRECTORS, KEY_ENABLE_RATINGS, KEY_ENABLE_TRAILERS, \
     KEY_ENABLE_REAL_ACTOR_NAMES
 from provider_id import ProviderID
@@ -116,6 +116,10 @@ class MetaTubeAgent(Agent.Movies):
                lang,  # type: str
                manual=False,  # type: bool
                ):
+
+        # ignore lang param
+        _ = lang
+
         position = None
         search_results = []  # type: list[MovieSearchResult]
 
@@ -145,20 +149,18 @@ class MetaTubeAgent(Agent.Movies):
             return results
 
         for i, m in enumerate(search_results):
-            pid = ProviderID(
+            pid = str(ProviderID(
                 provider=m.provider,
                 id=m.id,
                 position=position,
-            )
+            ))
             search_result = MetadataSearchResult(
-                id=str(pid),
-                name='[{pid:s}] {number}'.format(
-                    pid=pid,
-                    number=m.number),
+                id=pid,
+                name=pid,
                 year=(m.release_date.year
                       if m.release_date.year > 1900 else None),
                 score=int(100 - i),
-                lang=Locale.Language.Japanese or lang,
+                lang=Locale.Language.Japanese,
                 thumb=api.get_primary_image_url(
                     m.provider, m.id,
                     url=m.thumb_url,
@@ -166,7 +168,8 @@ class MetaTubeAgent(Agent.Movies):
             )
             # HACK: force to add type and summary
             search_result.type = 'movie'
-            search_result.summary = m.title
+            search_result.summary = DEFAULT_TITLE_TEMPLATE \
+                .format(number=m.number, title=m.title)
             results.Append(search_result)
 
         return results
