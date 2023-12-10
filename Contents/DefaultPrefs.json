@@ -1,0 +1,44 @@
+[
+  {
+    "id": "api_server",
+    "label": "API server",
+    "type": "text",
+    "default": "https://api.metatube.internal"
+  },
+  {
+    "id": "api_token",
+    "label": "API token",
+    "type": "text",
+    "default": ""
+  },
+  {
+    "id": "enable_collections",
+    "label": "Enable collections",
+    "type": "bool",
+    "default": "false"
+  },
+  {
+    "id": "enable_directors",
+    "label": "Enable directors",
+    "type": "bool",
+    "default": "true"
+  },
+  {
+    "id": "enable_ratings",
+    "label": "Enable ratings",
+    "type": "bool",
+    "default": "true"
+  },
+  {
+    "id": "enable_trailers",
+    "label": "Enable trailers",
+    "type": "bool",
+    "default": "true"
+  },
+  {
+    "id": "enable_real_actor_names",
+    "label": "Enable real actor names",
+    "type": "bool",
+    "default": "false"
+  }
+]
