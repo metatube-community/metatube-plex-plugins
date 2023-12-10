@@ -4,8 +4,6 @@ import re
 from datetime import datetime
 from os import path
 
-from requests.utils import CaseInsensitiveDict
-
 from constants import CHINESE_SUBTITLE
 
 
@@ -19,16 +17,16 @@ def parse_date(s):
 
 
 def parse_table(s):
-    table = CaseInsensitiveDict()
+    table = {}
     for kv in s.split(','):
         if kv.count('=') > 0 and not kv.startswith('='):
             i = kv.find('=')
-            table[kv[:i]] = kv[i + 1:]
+            table[kv[:i].upper()] = kv[i + 1:]
     return table
 
 
 def table_substitute(table, items):
-    return [table[i] if i in table else i for i in items]
+    return [table[i.upper()] if i.upper() in table else i for i in items]
 
 
 def has_tag(s, *tags):
