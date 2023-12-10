@@ -206,15 +206,15 @@ class MetaTubeAgent(Agent.Movies):
             metadata.audience_rating_image = None
 
         # Director:
+        metadata.directors.clear()
         if Prefs[KEY_ENABLE_DIRECTORS] and m.director:
-            metadata.directors.clear()
             director = metadata.directors.new()
             director.name = m.director
             metadata.directors.add(director)
 
         # Collections:
+        metadata.collections.clear()
         if Prefs[KEY_ENABLE_COLLECTIONS] and m.series.strip():
-            metadata.collections.clear()
             metadata.collections.add(m.series)
 
         # Genres:
@@ -252,7 +252,7 @@ class MetaTubeAgent(Agent.Movies):
             Log.Warn('Failed to load art image: {backdrop}'.format(backdrop=backdrop))
 
         # Extras:
-        metadata.extras.clear()
+        # metadata.extras.clear()
 
         # Trailer:
         # if Prefs[KEY_ENABLE_TRAILERS] and trailer_url:
