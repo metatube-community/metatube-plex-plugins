@@ -27,7 +27,7 @@ def parse_date(s):
         return datetime.strptime(
             findall(r'\d{4}-\d{2}-\d{2}', s)[0], '%Y-%m-%d')
     except:
-        return datetime(1, 1, 1)
+        return datetime(1, 1, 1)  # default value
 
 
 class BaseInfoObject(object):
