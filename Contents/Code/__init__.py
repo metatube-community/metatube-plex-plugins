@@ -79,7 +79,8 @@ class MetaTubeAgent(Agent.Movies):
         try:
             for actor in api.search_actor(q=name, provider=G_FRIENDS, fallback=False):
                 if actor.images:
-                    return actor.images[0]
+                    return api.get_primary_image_url(provider=G_FRIENDS, id=name,
+                                                     url=actor.images[0], ratio=1.0, auto=True)
         except Exception as e:
             Log.Warn('Get actor image error: {name} ({error})'.format(name=name, error=e))
 
@@ -250,9 +251,6 @@ class MetaTubeAgent(Agent.Movies):
             metadata.art[backdrop] = Proxy.Media(api.get_content(url=backdrop))
         except:
             Log.Warn('Failed to load art image: {backdrop}'.format(backdrop=backdrop))
-
-        # Extras:
-        # metadata.extras.clear()
 
         # Trailer:
         # if Prefs[KEY_ENABLE_TRAILERS] and trailer_url:
