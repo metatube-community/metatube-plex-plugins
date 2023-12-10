@@ -110,14 +110,14 @@ class APIClient(object):
             params=params)
         return req.url
 
-    def get_DATA(self, url, headers=None):
+    def get_content(self, url, headers=None):
         if isinstance(headers, dict):
             headers['User-Agent'] = DEFAULT_USER_AGENT
         with self.session.get(url=url, headers=headers) as r:
             r.raise_for_status()
             return r.content
 
-    def get_JSON(self, url, require_auth=False):
+    def get_json(self, url, require_auth=False):
         headers = {
             'Accept': 'application/json',
             'User-Agent': DEFAULT_USER_AGENT
@@ -140,7 +140,7 @@ class APIClient(object):
 
     def search_actor(self, q, provider=None, fallback=None):
         return [ActorSearchResult(**data)
-                for data in self.get_JSON(
+                for data in self.get_json(
                 url=self.prepare_url(
                     self.ACTOR_SEARCH_API,
                     q=q, provider=provider, fallback=fallback),
@@ -148,21 +148,21 @@ class APIClient(object):
 
     def search_movie(self, q, provider=None, fallback=None):
         return [MovieSearchResult(**data)
-                for data in self.get_JSON(
+                for data in self.get_json(
                 url=self.prepare_url(
                     self.MOVIE_SEARCH_API,
                     q=q, provider=provider, fallback=fallback),
                 require_auth=True)]
 
     def get_actor_info(self, provider, id, lazy=None):
-        return ActorInfoObject(**self.get_JSON(
+        return ActorInfoObject(**self.get_json(
             url=self.prepare_url(
                 self.ACTOR_INFO_API, provider, id,
                 lazy=lazy),
             require_auth=True))
 
     def get_movie_info(self, provider, id, lazy=None):
-        return MovieInfoObject(**self.get_JSON(
+        return MovieInfoObject(**self.get_json(
             url=self.prepare_url(
                 self.MOVIE_INFO_API, provider, id,
                 lazy=lazy),
@@ -190,7 +190,7 @@ class APIClient(object):
             provider, id)
 
     def translate(self, q, to, engine, **params):
-        return TranslationInfoObject(**self.get_JSON(
+        return TranslationInfoObject(**self.get_json(
             url=self.prepare_url(
                 self.TRANSLATE_API,
                 q=q, to=to, engine=engine, **params),

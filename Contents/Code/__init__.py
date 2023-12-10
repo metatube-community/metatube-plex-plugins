@@ -164,7 +164,7 @@ class MetaTubeAgent(Agent.Movies):
         primary = api.get_primary_image_url(m.provider, m.id, pos=pid.position)
         # noinspection PyBroadException
         try:
-            metadata.posters[primary] = Proxy.Media(api.get_DATA(url=primary))
+            metadata.posters[primary] = Proxy.Media(api.get_content(url=primary))
         except:
             Log.Warn('Failed to load poster image: {primary}'.format(primary=primary))
 
@@ -172,7 +172,7 @@ class MetaTubeAgent(Agent.Movies):
         backdrop = api.get_backdrop_image_url(m.provider, m.id)
         # noinspection PyBroadException
         try:
-            metadata.art[backdrop] = Proxy.Media(api.get_DATA(url=backdrop))
+            metadata.art[backdrop] = Proxy.Media(api.get_content(url=backdrop))
         except:
             Log.Warn('Failed to load art image: {backdrop}'.format(backdrop=backdrop))
 
