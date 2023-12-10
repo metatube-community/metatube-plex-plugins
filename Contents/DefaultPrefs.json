@@ -12,6 +12,12 @@
     "default": ""
   },
   {
+    "id": "enable_collections",
+    "label": "Enable collections",
+    "type": "bool",
+    "default": "false"
+  },
+  {
     "id": "enable_directors",
     "label": "Enable directors",
     "type": "bool",

@@ -2,7 +2,8 @@
 
 from api_client import api, APIError, MovieSearchResult
 from constants import PLUGIN_NAME, DEFAULT_USER_AGENT, DEFAULT_RATING, LANGUAGES, \
-    KEY_ENABLE_DIRECTORS, KEY_ENABLE_RATINGS, KEY_ENABLE_TRAILERS, KEY_ENABLE_REAL_ACTOR_NAMES
+    KEY_ENABLE_COLLECTIONS, KEY_ENABLE_DIRECTORS, KEY_ENABLE_RATINGS, KEY_ENABLE_TRAILERS, \
+    KEY_ENABLE_REAL_ACTOR_NAMES
 from provider_id import ProviderID
 
 try:  # Python 2
@@ -221,8 +222,8 @@ class MetaTubeAgent(Agent.Movies):
         #     metadata.extras.add(trailer)
 
         # Collections:
-        metadata.collections.clear()
-        if m.series.strip():
+        if Prefs[KEY_ENABLE_COLLECTIONS] and m.series.strip():
+            metadata.collections.clear()
             metadata.collections.add(m.series)
 
         # Genres:
