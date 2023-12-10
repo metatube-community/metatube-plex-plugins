@@ -71,7 +71,7 @@ class MetaTubeAgent(Agent.Movies):
 
     @staticmethod
     def parse_filename(filename):
-        return unquote(basename(filename))
+        return basename(unquote(filename))
 
     def search(self,
                results,  # type:
@@ -81,10 +81,12 @@ class MetaTubeAgent(Agent.Movies):
                ):
         position = None
         search_results = []  # type: list[MovieSearchResult]
-        default_query = self.parse_filename(media.filename)
 
-        if not manual:
-            search_results = self.api.search_movie(q=default_query)
+        # issued by scanning or auto match
+        if (not manual or media.openSubtitlesHash) \
+                and media.filename:
+            search_results = self.api.search_movie(
+                q=self.parse_filename(media.filename))
         else:
             try:  # exact match by provider and id
                 if not media.year or \
@@ -96,11 +98,8 @@ class MetaTubeAgent(Agent.Movies):
                 position = pid.position  # update position
                 search_results.append(self.api.get_movie_info(
                     pid.provider, pid.id, pid.update is not True))
-            except ValueError:
-                search_results = self.api.search_movie(
-                    q=default_query if media.openSubtitlesHash  # auto match
-                    else media.name  # with search options
-                )
+            except ValueError:  # fallback to name based search
+                search_results = self.api.search_movie(q=media.name)
 
         # TODO: add provider filter here
 
@@ -121,7 +120,10 @@ class MetaTubeAgent(Agent.Movies):
                 year=m.release_date.year if m.release_date.year > 1900 else None,
                 score=int(m.score * 20),
                 lang=Locale.Language.Japanese or lang,
-                # thumb=Proxy.Remote,
+                thumb=self.api.get_primary_image_url(
+                    m.provider, m.id,
+                    url=m.thumb_url,
+                    pos=1.0, auto=True),
             ))
 
         return results
@@ -132,4 +134,5 @@ class MetaTubeAgent(Agent.Movies):
                lang,  # type: str
                force=False,  # type: bool
                ):
+
         pass
