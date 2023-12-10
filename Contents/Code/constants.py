@@ -8,13 +8,26 @@ except ImportError:
 else:  # the code is running outside of Plex
     from plexhints.locale_kit import Locale  # locale kit
 
-# Common Languages
+# Supported Languages
 LANGUAGES = [
     Locale.Language.Chinese,
     Locale.Language.Japanese,
     Locale.Language.Korean,
     Locale.Language.English,
     Locale.Language.Russian,
+    Locale.Language.Vietnamese,
+    Locale.Language.Thai,
+    Locale.Language.Arabic,
+    Locale.Language.French,
+    Locale.Language.Finnish,
+    Locale.Language.Greek,
+    Locale.Language.Italian,
+    Locale.Language.German,
+    Locale.Language.Spanish,
+    Locale.Language.Portuguese,
+    Locale.Language.Danish,
+    Locale.Language.Dutch,
+    Locale.Language.Swedish,
 ]
 
 # Content Rating
