@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 
 from api_client import api, APIError, MovieSearchResult
-from constants import PLUGIN_NAME, DEFAULT_USER_AGENT, LANGUAGES
+from constants import PLUGIN_NAME, DEFAULT_USER_AGENT, LANGUAGES, \
+    KEY_ENABLE_DIRECTORS, KEY_ENABLE_RATINGS, KEY_ENABLE_TRAILERS
 from provider_id import ProviderID
 
 try:  # Python 2
@@ -103,7 +104,7 @@ class MetaTubeAgent(Agent.Movies):
             Log.Warn('Movie not found: {items}'.format(items=vars(media)))
             return results
 
-        for m in search_results:
+        for i, m in enumerate(search_results):
             results.Append(MetadataSearchResult(
                 id=str(ProviderID(
                     provider=m.provider,
@@ -115,7 +116,7 @@ class MetaTubeAgent(Agent.Movies):
                     title=m.title),
                 year=(m.release_date.year
                       if m.release_date.year > 1900 else None),
-                score=round(m.score * 20),
+                score=int(100 - i),
                 lang=Locale.Language.Japanese or lang,
                 thumb=api.get_primary_image_url(
                     m.provider, m.id,
@@ -134,16 +135,24 @@ class MetaTubeAgent(Agent.Movies):
 
         pid = ProviderID.Parse(metadata.id)
 
-        # if not pid or not pid.validate():
-        #     self.search([], media, lang, manual=True)
-
         Log.Info('Get movie info: {0:s}'.format(pid))
 
         m = api.get_movie_info(provider=pid.provider, id=pid.id)
 
+        original_title = m.title
+
         metadata.title = '{number} {title}'.format(
             number=m.number,
             title=m.title)
+
+        if Prefs[KEY_ENABLE_RATINGS]:
+            pass
+
+        if Prefs[KEY_ENABLE_DIRECTORS]:
+            pass
+
+        if Prefs[KEY_ENABLE_TRAILERS]:
+            pass
 
         metadata.genres = m.genres
 
@@ -151,16 +160,20 @@ class MetaTubeAgent(Agent.Movies):
 
         metadata.studio = m.maker
 
+        # Poster Image:
+        primary = api.get_primary_image_url(m.provider, m.id, pos=pid.position)
+        # noinspection PyBroadException
         try:
-            primary = api.get_primary_image_url(m.provider, m.id)
             metadata.posters[primary] = Proxy.Media(api.get_DATA(url=primary))
         except:
-            pass
+            Log.Warn('Failed to load poster image: {primary}'.format(primary=primary))
 
+        # Art Image:
+        backdrop = api.get_backdrop_image_url(m.provider, m.id)
+        # noinspection PyBroadException
         try:
-            backdrop = api.get_backdrop_image_url(m.provider, m.id)
             metadata.art[backdrop] = Proxy.Media(api.get_DATA(url=backdrop))
         except:
-            pass
+            Log.Warn('Failed to load art image: {backdrop}'.format(backdrop=backdrop))
 
         return metadata
