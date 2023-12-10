@@ -111,9 +111,8 @@ class MetaTubeAgent(Agent.Movies):
         position = None
         search_results = []  # type: list[MovieSearchResult]
 
-        # issued by scanning or auto match
-        if (not manual or media.openSubtitlesHash) \
-                and media.filename:
+        # issued by auto scanning
+        if not manual and media.filename:
             search_results = api.search_movie(
                 q=self.parse_filename(media.filename))
         else:
