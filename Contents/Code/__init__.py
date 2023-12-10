@@ -8,7 +8,7 @@ from constants import PLUGIN_NAME, DEFAULT_USER_AGENT, DEFAULT_RATING, \
     KEY_MOVIE_PROVIDER_FILTER, KEY_ENABLE_TITLE_TEMPLATE, KEY_TITLE_TEMPLATE, KEY_ENABLE_ACTOR_SUBSTITUTION, \
     KEY_ACTOR_SUBSTITUTION, KEY_ENABLE_GENRE_SUBSTITUTION, KEY_GENRE_SUBSTITUTION
 from provider_id import ProviderID
-from utils import parse_table, table_substitute, has_chinese_subtitle
+from utils import parse_list, parse_table, table_substitute, has_chinese_subtitle
 
 try:  # Python 2
     from urllib import unquote
@@ -70,18 +70,6 @@ class MetaTubeAgent(Agent.Movies):
                     'com.plexapp.agents.lambda',
                     'com.plexapp.agents.xbmcnfo']
     contributes_to = ['com.plexapp.agents.none']
-
-    def __init__(self, *args, **kwargs):
-        super(MetaTubeAgent, self).__init__(*args, **kwargs)
-
-        self.movie_provider_filter = [i.upper() for i in Prefs[KEY_MOVIE_PROVIDER_FILTER].split(',')] \
-            if Prefs[KEY_ENABLE_MOVIE_PROVIDER_FILTER] else []
-
-        self.actor_substitution_table = parse_table(Prefs[KEY_ACTOR_SUBSTITUTION]) \
-            if Prefs[KEY_ENABLE_ACTOR_SUBSTITUTION] else {}
-
-        self.genre_substitution_table = parse_table(Prefs[KEY_GENRE_SUBSTITUTION]) \
-            if Prefs[KEY_ENABLE_GENRE_SUBSTITUTION] else {}
 
     @staticmethod
     def parse_filename(filename):
@@ -160,10 +148,11 @@ class MetaTubeAgent(Agent.Movies):
 
         # apply movie provider filter
         if Prefs[KEY_ENABLE_MOVIE_PROVIDER_FILTER]:
-            if self.movie_provider_filter:
+            movie_provider_filter = parse_list(Prefs[KEY_MOVIE_PROVIDER_FILTER])
+            if movie_provider_filter:
                 search_results = [i for i in search_results
-                                  if i.provider.upper() in self.movie_provider_filter]
-                search_results.sort(key=lambda i: self.movie_provider_filter.index(i.provider.upper()))
+                                  if i.provider.upper() in movie_provider_filter]
+                search_results.sort(key=lambda i: movie_provider_filter.index(i.provider.upper()))
             else:
                 Log.Warn('Movie provider filter enabled but never used')
 
@@ -224,10 +213,10 @@ class MetaTubeAgent(Agent.Movies):
             self.convert_to_real_actor_names(m)
 
         if Prefs[KEY_ENABLE_ACTOR_SUBSTITUTION]:
-            m.actors = table_substitute(self.actor_substitution_table, m.actors)
+            m.actors = table_substitute(parse_table(Prefs[KEY_ACTOR_SUBSTITUTION]), m.actors)
 
         if Prefs[KEY_ENABLE_GENRE_SUBSTITUTION]:
-            m.genres = table_substitute(self.genre_substitution_table, m.genres)
+            m.genres = table_substitute(parse_table(Prefs[KEY_GENRE_SUBSTITUTION]), m.genres)
 
         # TODO: Translate Here
 
