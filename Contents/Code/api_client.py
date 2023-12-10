@@ -110,6 +110,13 @@ class APIClient(object):
             params=params)
         return req.url
 
+    def get_DATA(self, url, headers=None):
+        if isinstance(headers, dict):
+            headers['User-Agent'] = DEFAULT_USER_AGENT
+        with self.session.get(url=url, headers=headers) as r:
+            r.raise_for_status()
+            return r.content
+
     def get_JSON(self, url, require_auth=False):
         headers = {
             'Accept': 'application/json',
