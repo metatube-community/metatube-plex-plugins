@@ -2,6 +2,14 @@
 
 ![Plugin Banner](https://metatube-community.github.io/images/banner-dark.png)
 
+## Features
+
+- Full Metadata: Including title, summary, genres, director, actors.
+- Full Search: Support searching for movies between various providers.
+- Trailer Video: Support online movie trailers and preview videos.
+- Face Detection: Cut poster image with automatically face centered.
+- Auto Translation: Support translate metadata to preferred language.
+
 ## Platform
 
 [![Plex](https://img.shields.io/static/v1?color=%23E5A00D&style=for-the-badge&label=Plex&logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj48cmVjdCB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgcng9IjE1JSIgZmlsbD0iIzI4MmEyZCIvPjxwYXRoIGQ9Ik0yNTYgNzBIMTQ4bDEwOCAxODYtMTA4IDE4NmgxMDhsMTA4LTE4NnoiIGZpbGw9IiNlNWEwMGQiLz48L3N2Zz4=&message=stable)](https://www.plex.tv/)
