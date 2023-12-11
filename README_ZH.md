@@ -1,6 +1,6 @@
 # MetaTube Plex Plug-in
 
-[English](./README.md) | 简体中文
+**[English](./README.md) | 简体中文**
 
 ![Plugin Banner](https://metatube-community.github.io/images/banner-dark.png)
 
