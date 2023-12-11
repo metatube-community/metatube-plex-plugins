@@ -122,7 +122,9 @@ class MetaTubeAgent(Agent.Movies):
 
         def translate(q):
             try:
-                return api.translate(q=q, to=lang, engine=engine, **params)
+                return api.translate(q=q, to=lang,
+                                     engine=engine,
+                                     **params).translated_text
             except Exception as e:
                 Log.Warn('Translate error: {error}'.format(error=e))
             return q  # fallback to original
