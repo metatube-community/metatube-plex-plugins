@@ -141,12 +141,7 @@ class MetaTubeAgent(Agent.Movies):
                 TRANSLATION_MODE_ENUMS[TRANSLATION_MODE_SUMMARY]:
             m.summary = translate(m.summary)
 
-    def search(self,
-               results,  # type: SearchResult
-               media,  # type: Media.Movie
-               lang,  # type: str
-               manual=False,  # type: bool
-               ):
+    def search(self, results, media, lang, manual=False):
 
         position = None
         search_results = []  # type: list[MovieSearchResult]
@@ -210,12 +205,10 @@ class MetaTubeAgent(Agent.Movies):
 
         return results
 
-    def update(self,
-               metadata,  # type: Movie
-               media,  # type: Media
-               lang,  # type: str
-               force=False,  # type: bool
-               ):
+    def update(self, metadata, media, lang, force=False):
+
+        if force:
+            Log.Debug('Force metadata refreshing')
 
         pid = ProviderID.Parse(metadata.id)
         Log.Info('Get movie info: {0:s}'.format(pid))
