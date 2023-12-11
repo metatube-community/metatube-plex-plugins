@@ -150,7 +150,6 @@ class MetaTubeAgent(Agent.Movies):
 
         position = None
         search_results = []  # type: list[MovieSearchResult]
-        _ = lang  # ignore unused lang param
 
         # issued by scanning or auto match
         if (not manual or media.openSubtitlesHash) \
@@ -197,7 +196,7 @@ class MetaTubeAgent(Agent.Movies):
                 year=(m.release_date.year
                       if m.release_date.year > 1900 else None),
                 score=int(100 - i),
-                lang=Locale.Language.Japanese,
+                lang=lang,  # user preferred language
                 thumb=api.get_primary_image_url(
                     m.provider, m.id,
                     url=m.thumb_url,
@@ -238,6 +237,8 @@ class MetaTubeAgent(Agent.Movies):
             if has_chinese_subtitle(filename):
                 chinese_subtitle_on = True
                 m.genres.append(CHINESE_SUBTITLE)
+                Log.Debug('Chinese subtitle detected for {filename}'
+                          .format(filename=filename))
                 break
 
         # Apply Preferences
