@@ -7,7 +7,7 @@ English | [简体中文](./README_ZH.md)
 ## Features
 
 - Full Metadata: Including title, summary, genres, director, actors.
-- Full Search: Support searching for movies between various providers.
+- Full Search: Support movie searching between various providers.
 - Trailer Video: Support online movie trailers and preview videos.
 - Face Detection: Cut poster image with automatically face centered.
 - Auto Translation: Support translate metadata to preferred language.
