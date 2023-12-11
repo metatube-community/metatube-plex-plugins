@@ -1,0 +1,33 @@
+name: Publish Plex Bundle
+
+concurrency:
+  group: release-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: true
+
+on:
+  push:
+    branches:
+      - 'main'
+
+jobs:
+  bundle:
+    name: Bundle
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v3
+
+      - name: Make bundle
+        run: |
+          mkdir -p MetaTube.bundle/
+          mv Contents/ MetaTube.bundle/
+          zip -r MetaTube.bundle.zip MetaTube.bundle/
+
+      - name: Upload Releases
+        uses: softprops/action-gh-release@v1
+        with:
+          files: 'MetaTube.bundle.zip'
+          body: '_Auto Released by GitHub Actions_'
+          tag_name: 'bundle'
+          draft: false
+          prerelease: false
