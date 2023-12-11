@@ -4,6 +4,12 @@
 
 ![Plugin Banner](https://metatube-community.github.io/images/banner-dark.png)
 
+[![GitHub issues](https://img.shields.io/github/issues/metatube-community/MetaTube.bundle?logo=github)](https://github.com/metatube-community/MetaTube.bundle/issues)
+[![GitHub top language](https://img.shields.io/github/languages/top/metatube-community/MetaTube.bundle?color=%23FFD43B&label=Python&logo=python)](https://github.com/metatube-community/MetaTube.bundle/search?l=python)
+[![License](https://img.shields.io/github/license/metatube-community/MetaTube.bundle) ](https://github.com/metatube-community/MetaTube.bundle/blob/main/LICENSE)
+[![Telegram Group](https://img.shields.io/badge/Telegram-2CA5E0?logo=telegram&logoColor=white) ](https://t.me/MetaTubePlugin)
+[![Docker Pulls](https://img.shields.io/docker/pulls/metatube/metatube-server?logo=docker)](https://hub.docker.com/r/metatube/metatube-server)
+
 ## 特性
 
 - 完整数据：包括标题、**简介**、演员、标签、**评分**等内容。
