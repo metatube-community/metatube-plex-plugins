@@ -72,7 +72,7 @@ def has_external_chinese_subtitle(video_name, *filenames):
     r = re.compile(
         r'\.(chinese|ch[ist]|zh(-(cn|hk|tw|hans|hant))?)\.(ass|srt|ssa|stl|sub|vid|vtt)$', re.IGNORECASE)
     for filename in filenames:
-        if r.search(filename) and r.sub('', filename) == basename:
+        if r.search(filename) and r.sub('', filename).upper() == basename.upper():
             return True
     return False
 

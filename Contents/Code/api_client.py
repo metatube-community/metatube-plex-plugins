@@ -180,15 +180,15 @@ class APIClient(object):
             provider, id,
             url=url, ratio=ratio, pos=pos, auto=auto, badge=badge)
 
-    def get_thumb_image_url(self, provider, id):
+    def get_thumb_image_url(self, provider, id, **params):
         return self.prepare_url(
             self.THUMB_IMAGE_API,
-            provider, id)
+            provider, id, **params)
 
-    def get_backdrop_image_url(self, provider, id):
+    def get_backdrop_image_url(self, provider, id, **params):
         return self.prepare_url(
             self.BACKDROP_IMAGE_API,
-            provider, id)
+            provider, id, **params)
 
     def translate(self, q, to, engine, **params):
         return TranslationInfoObject(**self.get_json(
