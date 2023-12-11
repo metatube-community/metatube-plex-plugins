@@ -31,14 +31,14 @@ class BaseInfoObject(object):
 
 class ActorSearchResult(BaseInfoObject):
     def __init__(self, **data):
-        BaseInfoObject.__init__(self, **data)
+        super(ActorSearchResult, self).__init__(**data)
         self.name = data['name']  # type: str
         self.images = data['images']  # type: list[str]
 
 
 class ActorInfoObject(ActorSearchResult):
     def __init__(self, **data):
-        ActorSearchResult.__init__(self, **data)
+        super(ActorInfoObject, self).__init__(**data)
         self.aliases = data['aliases']  # type: list[str]
         self.summary = data['summary']  # type: str
         self.hobby = data['hobby']  # type: str
@@ -54,7 +54,7 @@ class ActorInfoObject(ActorSearchResult):
 
 class MovieSearchResult(BaseInfoObject):
     def __init__(self, **data):
-        BaseInfoObject.__init__(self, **data)
+        super(MovieSearchResult, self).__init__(**data)
         self.number = data['number']  # type: str
         self.title = data['title']  # type: str
         self.cover_url = data['cover_url']  # type: str
@@ -66,7 +66,7 @@ class MovieSearchResult(BaseInfoObject):
 
 class MovieInfoObject(MovieSearchResult):
     def __init__(self, **data):
-        MovieSearchResult.__init__(self, **data)
+        super(MovieInfoObject, self).__init__(**data)
         self.summary = data['summary']  # type: str
         self.director = data['director']  # type: str
         self.genres = data['genres']  # type: list[str]
