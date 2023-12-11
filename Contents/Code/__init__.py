@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from api_client import api, MovieSearchResult
-from constants import *
+from constants import *  # import all constants
 from provider_id import ProviderID
 from utils import parse_list, parse_table, table_substitute, has_chinese_subtitle
 
