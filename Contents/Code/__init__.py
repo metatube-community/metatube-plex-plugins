@@ -220,17 +220,18 @@ class MetaTubeAgent(Agent.Movies):
 
         Log.Info('Get movie info: {0:s}'.format(pid))
 
-        # API Request:
+        # API Request
         m = api.get_movie_info(provider=pid.provider, id=pid.id)
 
         original_title = m.title
+        release_date = m.release_date.strftime('%Y-%m-%d')
 
-        # Inline magic function:
+        # Inline magic function
         def get_media_files(obj):
             if hasattr(obj, 'all_parts'):
                 return [part.file for part in obj.all_parts() if hasattr(part, 'file')]
 
-        # Detect Chinese Subtitles:
+        # Detect Chinese Subtitles
         chinese_subtitle_on = False
         for filename in get_media_files(media) or ():
             if has_chinese_subtitle(filename):
@@ -238,7 +239,7 @@ class MetaTubeAgent(Agent.Movies):
                 m.genres.append(CHINESE_SUBTITLE)
                 break
 
-        # Apply Preferences:
+        # Apply Preferences
         if Prefs[KEY_ENABLE_REAL_ACTOR_NAMES]:
             self.convert_to_real_actor_names(m)
 
@@ -250,11 +251,11 @@ class MetaTubeAgent(Agent.Movies):
             m.genres = table_substitute(parse_table(Prefs[KEY_GENRE_SUBSTITUTION],
                                                     sep='\n', b64=True), m.genres)
 
-        # Translate Info:
+        # Translate Info
         if Prefs[KEY_TRANSLATION_MODE] != TRANSLATION_MODE_DISABLED:
             self.translate_movie_info(m, lang=lang)
 
-        # Title:
+        # Title
         metadata.title = (Prefs[KEY_TITLE_TEMPLATE]
                           if Prefs[KEY_ENABLE_TITLE_TEMPLATE]
                           else DEFAULT_TITLE_TEMPLATE).format(
@@ -269,71 +270,72 @@ class MetaTubeAgent(Agent.Movies):
             actors=(' '.join(m.actors)),
             first_actor=(m.actors[0] if m.actors else ''),
             year=m.release_date.year,
-            date=m.release_date.strftime('%Y-%m-%d'),
+            date=release_date,
         )
 
-        # Basic Metadata:
+        # Basic Metadata
         metadata.summary = m.summary
         metadata.original_title = original_title
+        metadata.tagline = DEFAULT_TAGLINE_TEMPLATE.format(date=release_date)
 
-        # Content Rating:
+        # Content Rating
         metadata.content_rating = DEFAULT_RATING
 
-        # Studio:
+        # Studio
         if m.maker.strip():
             metadata.studio = m.maker
 
-        # Release Date:
+        # Release Date
         if m.release_date.year > 1900:
             metadata.originally_available_at = m.release_date
             metadata.year = m.release_date.year
 
-        # Duration:
+        # Duration
         if m.runtime:
             metadata.duration = m.runtime * 60 * 1000  # millisecond
 
-        # Rating Score:
+        # Rating Score
         if Prefs[KEY_ENABLE_RATINGS] and m.score:
             metadata.rating = m.score * 2.0
             metadata.rating_image = None
             metadata.audience_rating = 0.0
             metadata.audience_rating_image = None
 
-        # Director:
+        # Director
         metadata.directors.clear()
         if Prefs[KEY_ENABLE_DIRECTORS] and m.director:
             director = metadata.directors.new()
             director.name = m.director
             metadata.directors.add(director)
 
-        # Collections:
+        # Collections
         metadata.collections.clear()
         if Prefs[KEY_ENABLE_COLLECTIONS] and m.series.strip():
             metadata.collections.add(m.series)
 
-        # Genres:
+        # Genres
         metadata.genres.clear()
         for genre in set(m.genres):
             metadata.genres.add(genre)
 
-        # Tags:
+        # Tags
         metadata.tags.clear()
         for tag in {m.maker, m.series, m.label}:
             if tag.strip():
                 metadata.tags.add(tag)
 
-        # Actors:
+        # Actors
         metadata.roles.clear()
         for actor in set(m.actors):
             role = metadata.roles.new()
             role.name = actor
             role.photo = self.get_actor_image_url(name=actor)
 
-        # CHS Badge:
+        # CHS Badge
         badge = Prefs[KEY_BADGE_URL] \
             if Prefs[KEY_ENABLE_BADGES] and chinese_subtitle_on else None
 
-        # Poster Image:
+        # Poster Image
         primary = api.get_primary_image_url(m.provider, m.id, pos=pid.position, badge=badge)
         # noinspection PyBroadException
         try:
@@ -341,7 +343,7 @@ class MetaTubeAgent(Agent.Movies):
         except:
             Log.Warn('Failed to load poster image: {primary}'.format(primary=primary))
 
-        # Art Image:
+        # Art Image
         backdrop = api.get_backdrop_image_url(m.provider, m.id)
         # noinspection PyBroadException
         try:
@@ -349,7 +351,11 @@ class MetaTubeAgent(Agent.Movies):
         except:
             Log.Warn('Failed to load art image: {backdrop}'.format(backdrop=backdrop))
 
-        # Trailer:
+        # Thumb Image
+        # thumb = api.get_thumb_image_url(m.provider, m.id)
+        # metadata.thumb = thumb
+
+        # Trailer
         # if Prefs[KEY_ENABLE_TRAILERS] and trailer_url:
         #     trailer = TrailerObject(
         #         # url='{plugin}://trailer/{b64url}'.format(

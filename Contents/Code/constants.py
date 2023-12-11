@@ -20,6 +20,7 @@ CHINESE_SUBTITLE = '中文字幕'
 
 # Default Values
 DEFAULT_TITLE_TEMPLATE = '{number} {title}'
+DEFAULT_TAGLINE_TEMPLATE = '配信開始日 {date}'
 
 # Supported Languages
 LANGUAGES = [
