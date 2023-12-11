@@ -23,7 +23,7 @@ def parse_list(s):
     return [i.strip().upper() for i in s.split(',') if i.strip()]
 
 
-def parse_table(s, sep=',', b64=False):
+def parse_table(s, sep=',', b64=False, origin_key=False):
     table = {}
     if not s:
         return table
@@ -33,12 +33,12 @@ def parse_table(s, sep=',', b64=False):
         kv = kv.strip()  # trim all whitespaces
         if kv.count('=') > 0 and not kv.startswith('='):
             i = kv.find('=')
-            table[kv[:i].upper()] = kv[i + 1:]
+            table[(kv[:i] if origin_key else kv[:i].upper())] = kv[i + 1:]
     return table
 
 
 def table_substitute(table, items):
-    return [table[i.upper()] if i.upper() in table else i for i in items]
+    return [(table[i.upper()] if i.upper() in table else i) for i in items]
 
 
 def has_tag(s, *tags):

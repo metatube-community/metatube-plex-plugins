@@ -118,7 +118,7 @@ class MetaTubeAgent(Agent.Movies):
         Log.Info('Translate movie info language: {0} => {1}'.format(m.number, lang))
 
         engine = Prefs[KEY_TRANSLATION_ENGINE]
-        params = parse_table(Prefs[KEY_TRANSLATION_ENGINE_PARAMETERS])
+        params = parse_table(Prefs[KEY_TRANSLATION_ENGINE_PARAMETERS], origin_key=True)
 
         def translate(q):
             try:
@@ -146,11 +146,9 @@ class MetaTubeAgent(Agent.Movies):
                manual=False,  # type: bool
                ):
 
-        # ignore unused lang param
-        _ = lang
-
         position = None
         search_results = []  # type: list[MovieSearchResult]
+        _ = lang  # ignore unused lang param
 
         # issued by scanning or auto match
         if (not manual or media.openSubtitlesHash) \
