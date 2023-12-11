@@ -114,7 +114,7 @@ class MetaTubeAgent(Agent.Movies):
     @staticmethod
     def translate_movie_info(m, lang):
         if lang == Locale.Language.Japanese:
-            Log.Warn('Translation not required for Japanese')
+            Log.Warn('Translation not applied to Japanese')
             return
 
         Log.Info('Translate movie info language: {0} => {1}'.format(m.number, lang))
@@ -131,14 +131,14 @@ class MetaTubeAgent(Agent.Movies):
                 Log.Warn('Translate error: {error}'.format(error=e))
             return q  # fallback to original
 
-        if Prefs[KEY_TRANSLATION_MODE] == TRANSLATION_MODE_TITLE:
+        mode = Prefs[KEY_TRANSLATION_MODE]
+
+        if TRANSLATION_MODE_ENUMS[mode] & \
+                TRANSLATION_MODE_ENUMS[TRANSLATION_MODE_TITLE]:
             m.title = translate(m.title)
 
-        elif Prefs[KEY_TRANSLATION_MODE] == TRANSLATION_MODE_SUMMARY:
-            m.summary = translate(m.summary)
-
-        elif Prefs[KEY_TRANSLATION_MODE] == TRANSLATION_MODE_TITLE_SUMMARY:
-            m.title = translate(m.title)
+        if TRANSLATION_MODE_ENUMS[mode] & \
+                TRANSLATION_MODE_ENUMS[TRANSLATION_MODE_SUMMARY]:
             m.summary = translate(m.summary)
 
     def search(self,
