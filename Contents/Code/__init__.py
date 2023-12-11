@@ -296,12 +296,20 @@ class MetaTubeAgent(Agent.Movies):
         if m.runtime:
             metadata.duration = m.runtime * 60 * 1000  # millisecond
 
-        # Rating Score
+        # Rating Score & Reviews
+        metadata.reviews.clear()
         if Prefs[KEY_ENABLE_RATINGS] and m.score:
             metadata.rating = m.score * 2.0
             metadata.rating_image = None
             metadata.audience_rating = 0.0
             metadata.audience_rating_image = None
+
+            # r = metadata.reviews.new()
+            # r.author = review.get('critic')
+            # r.source = review.get('publication')
+            # r.image = 'rottentomatoes://image.review.fresh'
+            # r.link = review.get('link')
+            # r.text = review.text
 
         # Director
         metadata.directors.clear()
@@ -353,9 +361,6 @@ class MetaTubeAgent(Agent.Movies):
         except:
             Log.Warn('Failed to load art image: {backdrop}'.format(backdrop=backdrop))
 
-        # Extras
-        # metadata.extras = None
-
         # Trailer
         trailer_url = (m.preview_video_url or
                        m.preview_video_hls_url)
@@ -377,5 +382,6 @@ class MetaTubeAgent(Agent.Movies):
                 thumb=thumb,
             )
             metadata.extras.add(trailer)
+            Log.Debug('Trailer added: {trailer}'.format(trailer=trailer_url))
 
         return metadata
