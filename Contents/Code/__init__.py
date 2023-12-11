@@ -10,7 +10,9 @@ try:  # Python 2
 except ImportError:  # Python 3
     from urllib.parse import unquote
 finally:
+    from base64 import urlsafe_b64encode
     from os.path import basename
+    from random import choice
 
 # plex debugging
 try:
@@ -351,20 +353,29 @@ class MetaTubeAgent(Agent.Movies):
         except:
             Log.Warn('Failed to load art image: {backdrop}'.format(backdrop=backdrop))
 
-        # Thumb Image
-        # thumb = api.get_thumb_image_url(m.provider, m.id)
-        # metadata.thumb = thumb
+        # Extras
+        # metadata.extras = None
 
         # Trailer
-        # if Prefs[KEY_ENABLE_TRAILERS] and trailer_url:
-        #     trailer = TrailerObject(
-        #         # url='{plugin}://trailer/{b64url}'.format(
-        #         #     plugin=PLUGIN_NAME.lower(),
-        #         #     b64url=base64.urlsafe_b64encode(trailer_url)
-        #         # ),
-        #         url=trailer_url,
-        #         title='Trailer'
-        #     )
-        #     metadata.extras.add(trailer)
+        trailer_url = (m.preview_video_url or
+                       m.preview_video_hls_url)
+
+        if Prefs[KEY_ENABLE_TRAILERS] and trailer_url:
+            # Choose thumb for trailer
+            if m.preview_images:
+                thumb = api.get_thumb_image_url(m.provider, m.id,
+                                                url=choice(m.preview_images))
+            else:
+                thumb = api.get_thumb_image_url(m.provider, m.id)
+
+            trailer = TrailerObject(
+                url='{plugin}://trailer/{b64url}'.format(
+                    plugin=PLUGIN_NAME.lower(),
+                    b64url=urlsafe_b64encode(trailer_url)
+                ),
+                title='Trailer: {number}'.format(number=m.number),
+                thumb=thumb,
+            )
+            metadata.extras.add(trailer)
 
         return metadata
