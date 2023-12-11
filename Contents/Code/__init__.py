@@ -1,12 +1,7 @@
 # -*- coding: utf-8 -*-
 
-from api_client import api, APIError, MovieSearchResult
-from constants import PLUGIN_NAME, DEFAULT_USER_AGENT, DEFAULT_RATING, \
-    DEFAULT_TITLE_TEMPLATE, CHINESE_SUBTITLE, LANGUAGES, \
-    KEY_ENABLE_COLLECTIONS, KEY_ENABLE_DIRECTORS, KEY_ENABLE_RATINGS, KEY_ENABLE_TRAILERS, \
-    KEY_ENABLE_REAL_ACTOR_NAMES, KEY_ENABLE_BADGES, KEY_BADGE_URL, KEY_ENABLE_MOVIE_PROVIDER_FILTER, \
-    KEY_MOVIE_PROVIDER_FILTER, KEY_ENABLE_TITLE_TEMPLATE, KEY_TITLE_TEMPLATE, KEY_ENABLE_ACTOR_SUBSTITUTION, \
-    KEY_ACTOR_SUBSTITUTION, KEY_ENABLE_GENRE_SUBSTITUTION, KEY_GENRE_SUBSTITUTION
+from api_client import api, MovieSearchResult
+from constants import *
 from provider_id import ProviderID
 from utils import parse_list, parse_table, table_substitute, has_chinese_subtitle
 
@@ -113,6 +108,34 @@ class MetaTubeAgent(Agent.Movies):
                 m.actors = results[0].actors
         except Exception as e:
             Log.Warn('Convert to real actor names error: {number} ({error})'.format(number=m.number, error=e))
+
+    @staticmethod
+    def translate_movie_info(m, lang):
+        if lang == Locale.Language.Japanese:
+            Log.Warn('Translation not required for Japanese')
+            return
+
+        Log.Info('Translate movie info language: {0} => {1}'.format(m.number, lang))
+
+        engine = Prefs[KEY_TRANSLATION_ENGINE]
+        params = parse_table(Prefs[KEY_TRANSLATION_ENGINE_PARAMETERS])
+
+        def translate(q):
+            try:
+                return api.translate(q=q, to=lang, engine=engine, **params)
+            except Exception as e:
+                Log.Warn('Translate error: {error}'.format(error=e))
+            return q  # fallback to original
+
+        if Prefs[KEY_TRANSLATION_MODE] == TRANSLATION_MODE_TITLE:
+            m.title = translate(m.title)
+
+        elif Prefs[KEY_TRANSLATION_MODE] == TRANSLATION_MODE_SUMMARY:
+            m.summary = translate(m.summary)
+
+        elif Prefs[KEY_TRANSLATION_MODE] == TRANSLATION_MODE_TITLE_SUMMARY:
+            m.title = translate(m.title)
+            m.summary = translate(m.summary)
 
     def search(self,
                results,  # type: SearchResult
@@ -227,7 +250,9 @@ class MetaTubeAgent(Agent.Movies):
             m.genres = table_substitute(parse_table(Prefs[KEY_GENRE_SUBSTITUTION],
                                                     sep='\n', b64=True), m.genres)
 
-        # TODO: Translate Here
+        # Translate Info:
+        if Prefs[KEY_TRANSLATION_MODE] != TRANSLATION_MODE_DISABLED:
+            self.translate_movie_info(m, lang=lang)
 
         # Title:
         metadata.title = (Prefs[KEY_TITLE_TEMPLATE]

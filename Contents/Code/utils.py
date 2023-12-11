@@ -24,9 +24,11 @@ def parse_list(s):
 
 
 def parse_table(s, sep=',', b64=False):
+    table = {}
+    if not s:
+        return table
     if b64:
         s = b64decode(s).decode('utf-8')
-    table = {}
     for kv in s.split(sep):
         kv = kv.strip()  # trim all whitespaces
         if kv.count('=') > 0 and not kv.startswith('='):

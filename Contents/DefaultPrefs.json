@@ -100,5 +100,36 @@
     "label": "Genre substitution table (Base64 encoding required)",
     "type": "text",
     "default": ""
+  },
+  {
+    "id": "translation_mode",
+    "label": "Translation mode",
+    "type": "enum",
+    "values": [
+      "Disabled",
+      "Title",
+      "Summary",
+      "Title and Summary"
+    ],
+    "default": "Disabled"
+  },
+  {
+    "id": "translation_engine",
+    "label": "Translation engine",
+    "type": "enum",
+    "values": [
+      "Baidu",
+      "Google",
+      "GoogleFree",
+      "DeepL",
+      "OpenAI"
+    ],
+    "default": "Baidu"
+  },
+  {
+    "id": "translation_engine_parameters",
+    "label": "Translation engine parameters",
+    "type": "text",
+    "default": ""
   }
 ]

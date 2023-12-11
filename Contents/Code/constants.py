@@ -61,3 +61,12 @@ KEY_ENABLE_ACTOR_SUBSTITUTION = 'enable_actor_substitution'
 KEY_ACTOR_SUBSTITUTION = 'actor_substitution_table'
 KEY_ENABLE_GENRE_SUBSTITUTION = 'enable_genre_substitution'
 KEY_GENRE_SUBSTITUTION = 'genre_substitution_table'
+KEY_TRANSLATION_MODE = 'translation_mode'
+KEY_TRANSLATION_ENGINE = 'translation_engine'
+KEY_TRANSLATION_ENGINE_PARAMETERS = 'translation_engine_parameters'
+
+# Translation Enums
+TRANSLATION_MODE_DISABLED = 'Disabled'
+TRANSLATION_MODE_TITLE = 'Title'
+TRANSLATION_MODE_SUMMARY = 'Summary'
+TRANSLATION_MODE_TITLE_SUMMARY = 'Title and Summary'
