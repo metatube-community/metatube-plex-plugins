@@ -141,16 +141,10 @@ class MetaTubeAgent(Agent.Movies):
                 TRANSLATION_MODE_ENUMS[TRANSLATION_MODE_SUMMARY]:
             m.summary = translate(m.summary)
 
-    def search(self,
-               results,  # type: SearchResult
-               media,  # type: Media.Movie
-               lang,  # type: str
-               manual=False,  # type: bool
-               ):
+    def search(self, results, media, lang, manual=False):
 
         position = None
         search_results = []  # type: list[MovieSearchResult]
-        _ = lang  # ignore unused lang param
 
         # issued by scanning or auto match
         if (not manual or media.openSubtitlesHash) \
@@ -197,7 +191,7 @@ class MetaTubeAgent(Agent.Movies):
                 year=(m.release_date.year
                       if m.release_date.year > 1900 else None),
                 score=int(100 - i),
-                lang=Locale.Language.Japanese,
+                lang=lang,  # user preferred language
                 thumb=api.get_primary_image_url(
                     m.provider, m.id,
                     url=m.thumb_url,
@@ -211,12 +205,10 @@ class MetaTubeAgent(Agent.Movies):
 
         return results
 
-    def update(self,
-               metadata,  # type: Movie
-               media,  # type: Media
-               lang,  # type: str
-               force=False,  # type: bool
-               ):
+    def update(self, metadata, media, lang, force=False):
+
+        if force:
+            Log.Debug('Force metadata refreshing')
 
         pid = ProviderID.Parse(metadata.id)
         Log.Info('Get movie info: {0:s}'.format(pid))
@@ -238,6 +230,8 @@ class MetaTubeAgent(Agent.Movies):
             if has_chinese_subtitle(filename):
                 chinese_subtitle_on = True
                 m.genres.append(CHINESE_SUBTITLE)
+                Log.Debug('Chinese subtitle detected for {filename}'
+                          .format(filename=filename))
                 break
 
         # Apply Preferences
@@ -282,6 +276,10 @@ class MetaTubeAgent(Agent.Movies):
         # Content Rating
         metadata.content_rating = DEFAULT_RATING
 
+        # Producing Country
+        metadata.countries.clear()
+        metadata.countries.add(DEFAULT_COUNTRY)
+
         # Studio
         if m.maker.strip():
             metadata.studio = m.maker
@@ -297,10 +295,25 @@ class MetaTubeAgent(Agent.Movies):
 
         # Rating Score
         if Prefs[KEY_ENABLE_RATINGS] and m.score:
-            metadata.rating = m.score * 2.0
-            metadata.rating_image = None
+            rating = m.score * 2.0
+            metadata.rating = rating
+            metadata.rating_image = ('rottentomatoes://image.rating.ripe' if rating > 7.0
+                                     else 'rottentomatoes://image.rating.rotten')
+        else:
+            metadata.rating = 0.0
             metadata.audience_rating = 0.0
+            metadata.rating_image = None
             metadata.audience_rating_image = None
+
+        # Reviews
+        metadata.reviews.clear()
+        # if None:
+        #     r = metadata.reviews.new()
+        #     r.author = review.get('critic')
+        #     r.source = review.get('publication')
+        #     r.image = 'rottentomatoes://image.review.fresh'
+        #     r.link = review.get('link')
+        #     r.text = review.text
 
         # Director
         metadata.directors.clear()
@@ -352,9 +365,6 @@ class MetaTubeAgent(Agent.Movies):
         except:
             Log.Warn('Failed to load art image: {backdrop}'.format(backdrop=backdrop))
 
-        # Extras
-        # metadata.extras = None
-
         # Trailer
         trailer_url = (m.preview_video_url or
                        m.preview_video_hls_url)
@@ -376,5 +386,6 @@ class MetaTubeAgent(Agent.Movies):
                 thumb=thumb,
             )
             metadata.extras.add(trailer)
+            Log.Debug('Trailer added: {trailer}'.format(trailer=trailer_url))
 
         return metadata
