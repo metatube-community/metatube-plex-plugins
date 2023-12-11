@@ -297,7 +297,7 @@ class MetaTubeAgent(Agent.Movies):
         if Prefs[KEY_ENABLE_RATINGS] and m.score:
             rating = m.score * 2.0
             metadata.rating = rating
-            metadata.rating_image = ('rottentomatoes://image.rating.ripe' if rating > 7.0
+            metadata.rating_image = ('rottentomatoes://image.rating.ripe' if rating >= 7.0
                                      else 'rottentomatoes://image.rating.rotten')
         else:
             metadata.rating = 0.0
