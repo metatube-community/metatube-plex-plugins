@@ -34,7 +34,7 @@ _注意：本项目仅支持 Plex 最新的稳定版本。_
 
 ## 许可
 
-本插件项目在 [MIT](https://github.com/metatube-community/MetaTube.bundle/blob/dev/LICENSE) 许可授权下发行。此外，如果使用本项目表明还额外接受以下条款：
+本插件项目在 [MIT](https://github.com/metatube-community/MetaTube.bundle/blob/main/LICENSE) 许可授权下发行。此外，如果使用本项目表明还额外接受以下条款：
 
 - 本插件仅供学习以及技术交流使用
 - 请勿在公共社交平台上宣传此项目

@@ -34,4 +34,4 @@ Welcome and feel free to ask any questions at [Discussions](https://github.com/m
 
 ## Licence
 
-This plugin is released under the [MIT](https://github.com/metatube-community/MetaTube.bundle/blob/dev/LICENSE) License.
+This plugin is released under the [MIT](https://github.com/metatube-community/MetaTube.bundle/blob/main/LICENSE) License.
