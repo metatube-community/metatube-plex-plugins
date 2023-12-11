@@ -14,6 +14,7 @@ DEFAULT_USER_AGENT = '%s.bundle' % PLUGIN_NAME
 
 # Content Rating
 DEFAULT_RATING = 'JP-18+'
+DEFAULT_COUNTRY = 'Japan'
 
 # Chinese Subtitle
 CHINESE_SUBTITLE = '中文字幕'

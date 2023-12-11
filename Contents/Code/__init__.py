@@ -283,6 +283,10 @@ class MetaTubeAgent(Agent.Movies):
         # Content Rating
         metadata.content_rating = DEFAULT_RATING
 
+        # Producing Country
+        metadata.countries.clear()
+        metadata.countries.add(DEFAULT_COUNTRY)
+
         # Studio
         if m.maker.strip():
             metadata.studio = m.maker
@@ -296,20 +300,27 @@ class MetaTubeAgent(Agent.Movies):
         if m.runtime:
             metadata.duration = m.runtime * 60 * 1000  # millisecond
 
-        # Rating Score & Reviews
-        metadata.reviews.clear()
+        # Rating Score
         if Prefs[KEY_ENABLE_RATINGS] and m.score:
-            metadata.rating = m.score * 2.0
-            metadata.rating_image = None
+            rating = m.score * 2.0
+            metadata.rating = rating
+            metadata.rating_image = ('rottentomatoes://image.rating.ripe' if rating > 7.0
+                                     else 'rottentomatoes://image.rating.rotten')
+        else:
+            metadata.rating = 0.0
             metadata.audience_rating = 0.0
+            metadata.rating_image = None
             metadata.audience_rating_image = None
 
-            # r = metadata.reviews.new()
-            # r.author = review.get('critic')
-            # r.source = review.get('publication')
-            # r.image = 'rottentomatoes://image.review.fresh'
-            # r.link = review.get('link')
-            # r.text = review.text
+        # Reviews
+        metadata.reviews.clear()
+        # if None:
+        #     r = metadata.reviews.new()
+        #     r.author = review.get('critic')
+        #     r.source = review.get('publication')
+        #     r.image = 'rottentomatoes://image.review.fresh'
+        #     r.link = review.get('link')
+        #     r.text = review.text
 
         # Director
         metadata.directors.clear()
