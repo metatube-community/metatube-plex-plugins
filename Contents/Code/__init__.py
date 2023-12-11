@@ -218,7 +218,14 @@ class MetaTubeAgent(Agent.Movies):
                force=False,  # type: bool
                ):
 
-        pid = ProviderID.Parse(metadata.id)
+        pid = ProviderID.TryParse(metadata.id)
+        if not pid or not pid.validate():
+            # fallback to movie search
+            search_results = api.search_movie(q=media.name)
+            pid = ProviderID(provider=search_results[0].provider,
+                             id=search_results[0].id)
+            # assign new provider id
+            metadata.id = str(pid)
 
         Log.Info('Get movie info: {0:s}'.format(pid))
 
