@@ -1,4 +1,4 @@
-name: Publish Plex Bundle
+name: Publish Plex Plug-in Bundle
 
 concurrency:
   group: release-${{ github.event_name }}-${{ github.ref }}
@@ -9,6 +9,7 @@ on:
     branches:
       - 'main'
     paths:
+      - '.github/workflows/release.yml'
       - 'Contents/**'
 
 jobs:
@@ -28,6 +29,7 @@ jobs:
         run: |
           echo v${{ steps.shell.outputs.version }} > VERSION
           mkdir -p MetaTube.bundle/
+          mv LICENSE   MetaTube.bundle/
           mv VERSION   MetaTube.bundle/
           mv Contents/ MetaTube.bundle/
           zip -r MetaTube.bundle.zip MetaTube.bundle/
