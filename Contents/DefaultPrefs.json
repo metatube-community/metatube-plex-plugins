@@ -18,6 +18,12 @@
     "default": "false"
   },
   {
+    "id": "enable_chapters",
+    "label": "Enable chapters",
+    "type": "bool",
+    "default": "true"
+  },
+  {
     "id": "enable_directors",
     "label": "Enable directors",
     "type": "bool",

@@ -307,6 +307,7 @@ class MetaTubeAgent(Agent.Movies):
 
         # Reviews
         metadata.reviews.clear()
+
         # if None:
         #     r = metadata.reviews.new()
         #     r.author = review.get('critic')
@@ -314,6 +315,26 @@ class MetaTubeAgent(Agent.Movies):
         #     r.image = 'rottentomatoes://image.review.fresh'
         #     r.link = review.get('link')
         #     r.text = review.text
+
+        def get_media_durations(obj):
+            if hasattr(obj, 'all_parts'):
+                return [int(part.duration) for part in obj.all_parts() if hasattr(part, 'duration')]
+
+        # Chapters
+        metadata.chapters.clear()
+        # only generate chapters if is a single video file
+        durations = get_media_durations(media)
+        if Prefs[KEY_ENABLE_CHAPTERS] and len(durations) == 1 \
+                and durations[0] > 10 * 60 * 1000:
+            duration = durations[0]
+            interval = 5 * 60 * 1000  # every 5 minutes
+            for i, offset in enumerate(range(0, duration, interval)):
+                start, end = offset, offset + interval
+                chapter = metadata.chapters.new()
+                chapter.title = 'Chapter {i}'.format(i=(i + 1))
+                chapter.start_time_offset = start
+                chapter.end_time_offset = (end if end < duration
+                                           else duration)
 
         # Director
         metadata.directors.clear()

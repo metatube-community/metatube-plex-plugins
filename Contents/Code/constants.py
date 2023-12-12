@@ -49,6 +49,7 @@ LANGUAGES = [
 KEY_API_SERVER = 'api_server'
 KEY_API_TOKEN = 'api_token'
 KEY_ENABLE_COLLECTIONS = 'enable_collections'
+KEY_ENABLE_CHAPTERS = 'enable_chapters'
 KEY_ENABLE_DIRECTORS = 'enable_directors'
 KEY_ENABLE_RATINGS = 'enable_ratings'
 KEY_ENABLE_TRAILERS = 'enable_trailers'
