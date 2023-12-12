@@ -8,7 +8,9 @@
 [![GitHub top language](https://img.shields.io/github/languages/top/metatube-community/MetaTube.bundle?color=%23FFD43B&label=Python&logo=python)](https://github.com/metatube-community/MetaTube.bundle/search?l=python)
 [![License](https://img.shields.io/github/license/metatube-community/MetaTube.bundle)](https://github.com/metatube-community/MetaTube.bundle/blob/main/LICENSE)
 [![Telegram Group](https://img.shields.io/badge/Telegram-2CA5E0?logo=telegram&logoColor=white)](https://t.me/MetaTubePlugin)
+[![GitHub all releases](https://img.shields.io/github/downloads/metatube-community/MetaTube.bundle/total)](https://github.com/metatube-community/MetaTube.bundle)
 [![Docker Pulls](https://img.shields.io/docker/pulls/metatube/metatube-server?logo=docker)](https://hub.docker.com/r/metatube/metatube-server)
+[![Releases](https://img.shields.io/github/v/release/metatube-community/MetaTube.bundle?display_name=release&logo=smartthings)](https://github.com/metatube-community/MetaTube.bundle/releases)
 
 ## 特性
 

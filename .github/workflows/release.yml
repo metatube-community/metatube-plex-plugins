@@ -17,17 +17,25 @@ jobs:
       - name: Check out code
         uses: actions/checkout@v3
 
+      - name: Generate Version
+        id: shell
+        run: |
+          echo "version=$(date -u '+%Y.%-m%d.%-H%M.0')" >> $GITHUB_OUTPUT
+
       - name: Make bundle
         run: |
+          echo v${{ steps.shell.outputs.version }} > VERSION
           mkdir -p MetaTube.bundle/
+          mv VERSION   MetaTube.bundle/
           mv Contents/ MetaTube.bundle/
           zip -r MetaTube.bundle.zip MetaTube.bundle/
 
       - name: Upload Releases
         uses: softprops/action-gh-release@v1
         with:
-          files: 'MetaTube.bundle.zip'
-          body: '_Auto Released by GitHub Actions_'
-          tag_name: 'bundle'
+          files: MetaTube.bundle.zip
+          body: _Auto Released by GitHub Actions_
+          name: v${{ steps.shell.outputs.version }}
+          tag_name: bundle
           draft: false
           prerelease: false
