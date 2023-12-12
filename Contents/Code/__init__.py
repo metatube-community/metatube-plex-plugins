@@ -73,6 +73,17 @@ class MetaTubeAgent(Agent.Movies):
         return basename(unquote(filename))
 
     @staticmethod
+    def get_rating_image(rating):
+        return 'rottentomatoes://image.rating.ripe' \
+            if float(rating) >= 6.0 else 'rottentomatoes://image.rating.rotten'
+
+    @staticmethod
+    def get_media_attributes(obj, attr, fn=lambda x: x):
+        if not hasattr(obj, 'all_parts'):
+            return ()
+        return [fn(getattr(part, attr)) for part in obj.all_parts() if hasattr(part, attr)]
+
+    @staticmethod
     def get_actor_image_url(name):
 
         G_FRIENDS = 'GFriends'
@@ -219,14 +230,9 @@ class MetaTubeAgent(Agent.Movies):
         original_title = m.title
         release_date = m.release_date.strftime('%Y-%m-%d')
 
-        # Inline magic function
-        def get_media_files(obj):
-            if hasattr(obj, 'all_parts'):
-                return [part.file for part in obj.all_parts() if hasattr(part, 'file')]
-
         # Detect Chinese Subtitles
         chinese_subtitle_on = False
-        for filename in get_media_files(media) or ():
+        for filename in self.get_media_attributes(media, 'file'):
             if has_chinese_subtitle(filename):
                 chinese_subtitle_on = True
                 m.genres.append(CHINESE_SUBTITLE)
@@ -295,10 +301,8 @@ class MetaTubeAgent(Agent.Movies):
 
         # Rating Score
         if Prefs[KEY_ENABLE_RATINGS] and m.score:
-            rating = m.score * 2.0
-            metadata.rating = rating
-            metadata.rating_image = ('rottentomatoes://image.rating.ripe' if rating >= 7.0
-                                     else 'rottentomatoes://image.rating.rotten')
+            metadata.rating = m.score * 2.0
+            metadata.rating_image = self.get_rating_image(metadata.rating)
         else:
             metadata.rating = 0.0
             metadata.audience_rating = 0.0
@@ -316,14 +320,10 @@ class MetaTubeAgent(Agent.Movies):
         #     r.link = review.get('link')
         #     r.text = review.text
 
-        def get_media_durations(obj):
-            if hasattr(obj, 'all_parts'):
-                return [int(part.duration) for part in obj.all_parts() if hasattr(part, 'duration')]
-
         # Chapters
         metadata.chapters.clear()
         # only generate chapters for the first video file
-        durations = get_media_durations(media)
+        durations = self.get_media_attributes(media, 'duration', fn=int)
         if Prefs[KEY_ENABLE_CHAPTERS] and len(durations) > 0 \
                 and durations[0] > 10 * 60 * 1000:
             duration = durations[0]
