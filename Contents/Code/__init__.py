@@ -322,9 +322,9 @@ class MetaTubeAgent(Agent.Movies):
 
         # Chapters
         metadata.chapters.clear()
-        # only generate chapters if is a single video file
+        # only generate chapters for the first video file
         durations = get_media_durations(media)
-        if Prefs[KEY_ENABLE_CHAPTERS] and len(durations) == 1 \
+        if Prefs[KEY_ENABLE_CHAPTERS] and len(durations) > 0 \
                 and durations[0] > 10 * 60 * 1000:
             duration = durations[0]
             interval = 5 * 60 * 1000  # every 5 minutes
