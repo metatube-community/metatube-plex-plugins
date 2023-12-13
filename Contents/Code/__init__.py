@@ -174,8 +174,9 @@ class MetaTubeAgent(Agent.Movies):
 
         if TRANSLATION_MODE_ENUMS[mode] & \
                 TRANSLATION_MODE_ENUMS[TRANSLATION_MODE_REVIEWS]:
-            reviews[:] = [self.translate_text(review.comment, lang=lang,
-                                              default=review.comment) for review in reviews]
+            for review in reviews:
+                review.comment = self.translate_text(review.comment, lang=lang,
+                                                     default=review.comment)
 
     def search(self, results, media, lang, manual=False):
 
