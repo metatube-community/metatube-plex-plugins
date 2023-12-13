@@ -121,7 +121,9 @@
       "Disabled",
       "Title",
       "Summary",
-      "Title and Summary"
+      "Reviews",
+      "Title and Summary",
+      "Title, Summary and Reviews"
     ],
     "default": "Disabled"
   },

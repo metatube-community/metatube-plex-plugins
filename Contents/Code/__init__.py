@@ -136,34 +136,47 @@ class MetaTubeAgent(Agent.Movies):
             Log.Warn('Convert to real actor names error: {number} ({error})'.format(number=m.number, error=e))
 
     @staticmethod
-    def translate_movie_info(m, lang):
+    def translate_text(text, lang, fallback=None):
+        translated_text = fallback
+
+        if Prefs[KEY_TRANSLATION_MODE] == TRANSLATION_MODE_DISABLED:
+            Log.Warn('Translation is disabled')
+            return translated_text
+
         if lang == Locale.Language.Japanese:
             Log.Warn('Translation not applied to Japanese')
-            return
-
-        Log.Info('Translate movie info language: {0} => {1}'.format(m.number, lang))
+            return translated_text
 
         engine = Prefs[KEY_TRANSLATION_ENGINE]
         params = parse_table(Prefs[KEY_TRANSLATION_ENGINE_PARAMETERS], origin_key=True)
 
-        def translate(q):
-            try:
-                return api.translate(q=q, to=lang,
-                                     engine=engine,
-                                     **params).translated_text
-            except Exception as e:
-                Log.Warn('Translate error: {error}'.format(error=e))
-            return q  # fallback to original
+        try:
+            translated_text = api.translate(q=text, to=lang, engine=engine,
+                                            **params).translated_text
+        except Exception as e:
+            Log.Warn('Translate error: {error}'.format(error=e))
+        finally:
+            return translated_text
 
+    def translate_movie_info(self, m, lang):
         mode = Prefs[KEY_TRANSLATION_MODE]
 
         if TRANSLATION_MODE_ENUMS[mode] & \
                 TRANSLATION_MODE_ENUMS[TRANSLATION_MODE_TITLE]:
-            m.title = translate(m.title)
+            m.title = self.translate_text(m.title, lang=lang, fallback=m.title)
 
         if TRANSLATION_MODE_ENUMS[mode] & \
                 TRANSLATION_MODE_ENUMS[TRANSLATION_MODE_SUMMARY]:
-            m.summary = translate(m.summary)
+            m.summary = self.translate_text(m.summary, lang=lang, fallback=m.summary)
+
+    def translate_reviews(self, reviews, lang):
+        mode = Prefs[KEY_TRANSLATION_MODE]
+
+        if TRANSLATION_MODE_ENUMS[mode] & \
+                TRANSLATION_MODE_ENUMS[TRANSLATION_MODE_REVIEWS]:
+            for review in reviews:
+                review.comment = self.translate_text(review.comment, lang=lang,
+                                                     fallback=review.comment)
 
     def search(self, results, media, lang, manual=False):
 
@@ -332,6 +345,8 @@ class MetaTubeAgent(Agent.Movies):
                 except Exception as e:
                     Log.Warn('Get reviews for {id} failed {error}'.format(id=m.id, error=e))
                 else:
+                    if Prefs[KEY_TRANSLATION_MODE] != TRANSLATION_MODE_DISABLED:
+                        self.translate_reviews(reviews, lang=lang)
                     for review in reviews:
                         r = metadata.reviews.new()
                         r.author = review.author
