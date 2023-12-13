@@ -185,7 +185,7 @@ class MetaTubeAgent(Agent.Movies):
                 )
                 position = pid.position  # update position
                 search_results.append(api.get_movie_info(
-                    pid.provider, pid.id, pid.update is not True))
+                    provider=pid.provider, id=pid.id, lazy=(pid.update is not True)))
             except ValueError:  # fallback to name based search
                 search_results = api.search_movie(q=media.name)
 
