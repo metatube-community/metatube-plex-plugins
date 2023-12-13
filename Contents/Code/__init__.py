@@ -4,7 +4,7 @@ from api_client import api, MovieSearchResult
 from constants import *  # import all constants
 from provider_id import ProviderID
 from utils import parse_list, parse_table, table_substitute, \
-    has_chinese_subtitle, extra_media_parts, extra_media_durations
+    average, has_chinese_subtitle, extra_media_parts
 
 try:  # Python 2
     from urllib import unquote
@@ -322,12 +322,28 @@ class MetaTubeAgent(Agent.Movies):
         if m.runtime:
             metadata.duration = m.runtime * 60 * 1000  # millisecond
 
-        # Clear ratings
+        # Chapters
+        metadata.chapters.clear()
+        chapter_min_duration = 10 * 60 * 1000  # 10 minutes
+        chapter_gen_interval = 5 * 60 * 1000  # 5 minutes
+        # only generate chapters for media with single file
+        durations = [int(p.duration) for p in extra_media_parts(media)]
+        if Prefs[KEY_ENABLE_CHAPTERS] and len(durations) == 1 \
+                and durations[0] > chapter_min_duration:
+            duration = durations[0]
+            for i, offset in enumerate(range(0, duration, chapter_gen_interval)):
+                start, end = offset, offset + chapter_gen_interval
+                chapter = metadata.chapters.new()
+                chapter.title = 'Chapter {i}'.format(i=(i + 1))
+                chapter.start_time_offset = start
+                chapter.end_time_offset = end if end < duration else duration
+
+        # Clear Ratings
         metadata.rating = 0.0
         metadata.audience_rating = 0.0
         metadata.rating_image = None
         metadata.audience_rating_image = None
-        # Clear reviews
+        # Clear Reviews
         metadata.reviews.clear()
         # Ratings & Reviews
         if Prefs[KEY_ENABLE_RATINGS] and m.score:
@@ -352,36 +368,9 @@ class MetaTubeAgent(Agent.Movies):
                         _ = review.title  # title is never used
 
                     # Audience Rating
-                    scores = float(0)
-                    totals = int(0)
-                    for i in reviews:
-                        if i.score > 0:
-                            scores += i.score
-                            totals += 1
-                    metadata.audience_rating = (scores / totals) * 2
+                    scores = [i for i in reviews if i.score > 0]
+                    metadata.audience_rating = average(scores) * 2
                     metadata.audience_rating_image = self.get_audience_rating_image(metadata.audience_rating)
-
-        def get_media_attributes(obj):
-            if not hasattr(obj, 'all_parts'):
-                return ()
-            return [(getattr(part, 'file'), getattr(part, 'duration')) for part in obj.all_parts()]
-
-        p = get_media_attributes(media)
-        Log.Warn('media part: {}'.format(p))
-
-        # Chapters
-        metadata.chapters.clear()
-        chapter_min_duration = 10 * 60 * 1000  # 10 minutes
-        chapter_gen_interval = 5 * 60 * 1000  # 5 minutes
-        # only generate chapters for the shortest parts
-        duration = min(i for i in extra_media_durations(media).values())
-        if Prefs[KEY_ENABLE_CHAPTERS] and duration > chapter_min_duration:
-            for i, offset in enumerate(range(0, duration, chapter_gen_interval)):
-                start, end = offset, offset + chapter_gen_interval
-                chapter = metadata.chapters.new()
-                chapter.title = 'Chapter {i}'.format(i=(i + 1))
-                chapter.start_time_offset = start
-                chapter.end_time_offset = end if end < duration else duration
 
         # Director
         metadata.directors.clear()

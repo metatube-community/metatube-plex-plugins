@@ -7,6 +7,15 @@ from datetime import datetime
 from constants import *  # import all
 
 
+def average(a):
+    x = 0.0
+    if not a:
+        return x
+    for i in a:
+        x = x + i
+    return x / len(a)
+
+
 def parse_date(s):
     # noinspection PyBroadException
     try:
@@ -98,16 +107,15 @@ def extra_media_durations(obj):
 
     durations = {}
     for part in parts:
-        if int(part.duration) < 0:
-            continue
-        name, ext = os.path.splitext(part.file)
+        if int(part.duration) > 0:
+            name, ext = os.path.splitext(part.file)
 
-        if r.search(name):
-            key = re.sub(r'\d+$', '', name) + ext
-        else:
-            key = name + ext
+            if r.search(name):
+                key = re.sub(r'\d+$', '', name) + ext
+            else:
+                key = name + ext
 
-        durations.setdefault(key, 0)
-        durations[key] = durations[key] + int(part.duration)
+            durations.setdefault(key, 0)
+            durations[key] = durations[key] + int(part.duration)
 
     return durations
