@@ -3,7 +3,8 @@
 from api_client import api, MovieSearchResult
 from constants import *  # import all constants
 from provider_id import ProviderID
-from utils import parse_list, parse_table, table_substitute, has_chinese_subtitle
+from utils import parse_list, parse_table, table_substitute, \
+    has_chinese_subtitle, extra_media_parts, extra_media_durations
 
 try:  # Python 2
     from urllib import unquote
@@ -89,12 +90,6 @@ class MetaTubeAgent(Agent.Movies):
         return 'rottentomatoes://image.review.fresh' \
             if not rating or float(rating) >= 6.0 \
             else 'rottentomatoes://image.review.rotten'
-
-    @staticmethod
-    def get_media_attributes(obj, attr, fn=lambda x: x):
-        if not hasattr(obj, 'all_parts'):
-            return ()
-        return [fn(getattr(part, attr)) for part in obj.all_parts() if hasattr(part, attr)]
 
     @staticmethod
     def get_actor_image_url(name):
@@ -258,7 +253,7 @@ class MetaTubeAgent(Agent.Movies):
 
         # Detect Chinese Subtitles
         chinese_subtitle_on = False
-        for filename in self.get_media_attributes(media, 'file'):
+        for filename in (p.file for p in extra_media_parts(media)):
             if has_chinese_subtitle(filename):
                 chinese_subtitle_on = True
                 m.genres.append(CHINESE_SUBTITLE)
@@ -366,16 +361,23 @@ class MetaTubeAgent(Agent.Movies):
                     metadata.audience_rating = (scores / totals) * 2
                     metadata.audience_rating_image = self.get_audience_rating_image(metadata.audience_rating)
 
+        def get_media_attributes(obj):
+            if not hasattr(obj, 'all_parts'):
+                return ()
+            return [(getattr(part, 'file'), getattr(part, 'duration')) for part in obj.all_parts()]
+
+        p = get_media_attributes(media)
+        Log.Warn('media part: {}'.format(p))
+
         # Chapters
         metadata.chapters.clear()
-        # only generate chapters for the first video file
-        durations = self.get_media_attributes(media, 'duration', fn=int)
-        if Prefs[KEY_ENABLE_CHAPTERS] and len(durations) > 0 \
-                and durations[0] > 10 * 60 * 1000:
-            duration = durations[0]
-            interval = 5 * 60 * 1000  # every 5 minutes
-            for i, offset in enumerate(range(0, duration, interval)):
-                start, end = offset, offset + interval
+        chapter_min_duration = 10 * 60 * 1000  # 10 minutes
+        chapter_gen_interval = 5 * 60 * 1000  # 5 minutes
+        # only generate chapters for the shortest parts
+        duration = min(i for i in extra_media_durations(media).values())
+        if Prefs[KEY_ENABLE_CHAPTERS] and duration > chapter_min_duration:
+            for i, offset in enumerate(range(0, duration, chapter_gen_interval)):
+                start, end = offset, offset + chapter_gen_interval
                 chapter = metadata.chapters.new()
                 chapter.title = 'Chapter {i}'.format(i=(i + 1))
                 chapter.start_time_offset = start
