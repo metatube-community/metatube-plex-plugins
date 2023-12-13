@@ -381,8 +381,7 @@ class MetaTubeAgent(Agent.Movies):
                 chapter = metadata.chapters.new()
                 chapter.title = 'Chapter {i}'.format(i=(i + 1))
                 chapter.start_time_offset = start
-                chapter.end_time_offset = (end if end < duration
-                                           else duration)
+                chapter.end_time_offset = end if end < duration else duration
 
         # Director
         metadata.directors.clear()

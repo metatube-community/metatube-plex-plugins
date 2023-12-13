@@ -108,6 +108,6 @@ def extra_media_durations(obj):
             key = name + ext
 
         durations.setdefault(key, 0)
-        durations[key] += int(part.duration)
+        durations[key] = durations[key] + int(part.duration)
 
     return durations
