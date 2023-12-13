@@ -45,11 +45,17 @@ LANGUAGES = [
 ]
 
 # File Extensions
-VIDEO_EXTENSIONS = ('.mp4', '.m4v', '.mkv', '.wmv', '.avi',
-                    '.flv', '.mov', '.3gp', '.rm', '.rmvb',
-                    '.ts', '.m2ts', '.mpegts', '.mpeg')
-SUBTITLE_EXTENSIONS = ('.srt', '.ass', '.ssa', '.smi',
-                       '.sub', '.idx', '.vtt', '.psb')
+SUBTITLE_EXTENSIONS = ('.utf', '.utf8', '.utf-8', '.srt', '.smi',
+                       '.rt', '.ssa', '.aqt', '.jss', '.ass',
+                       '.idx', '.sub', '.txt', '.psb', '.vtt')
+VIDEO_EXTENSIONS = ('.3g2', '.3gp', '.asf', '.asx', '.avc', '.avi',
+                    '.avs', '.bivx', '.bup', '.divx', '.dv', '.dvr-ms',
+                    '.evo', '.fli', '.flv', '.m2t', '.m2ts', '.m2v',
+                    '.m4v', '.mkv', '.mov', '.mp4', '.mpeg', '.mpg',
+                    '.mts', '.nsv', '.nuv', '.ogm', '.ogv', '.tp',
+                    '.pva', '.qt', '.rm', '.rmvb', '.sdp', '.svq3',
+                    '.strm', '.ts', '.ty', '.vdr', '.viv', '.vob',
+                    '.vp3', '.wmv', '.wpl', '.wtv', '.xsp', '.xvid', '.webm')
 
 # Preference Keys
 KEY_API_SERVER = 'api_server'
