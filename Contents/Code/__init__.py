@@ -136,8 +136,8 @@ class MetaTubeAgent(Agent.Movies):
             Log.Warn('Convert to real actor names error: {number} ({error})'.format(number=m.number, error=e))
 
     @staticmethod
-    def translate_text(text, lang, default=None):
-        translated_text = default
+    def translate_text(text, lang, fallback=None):
+        translated_text = fallback
 
         if Prefs[KEY_TRANSLATION_MODE] == TRANSLATION_MODE_DISABLED:
             Log.Warn('Translation is disabled')
@@ -163,11 +163,11 @@ class MetaTubeAgent(Agent.Movies):
 
         if TRANSLATION_MODE_ENUMS[mode] & \
                 TRANSLATION_MODE_ENUMS[TRANSLATION_MODE_TITLE]:
-            m.title = self.translate_text(m.title, lang=lang, default=m.title)
+            m.title = self.translate_text(m.title, lang=lang, fallback=m.title)
 
         if TRANSLATION_MODE_ENUMS[mode] & \
                 TRANSLATION_MODE_ENUMS[TRANSLATION_MODE_SUMMARY]:
-            m.summary = self.translate_text(m.summary, lang=lang, default=m.summary)
+            m.summary = self.translate_text(m.summary, lang=lang, fallback=m.summary)
 
     def translate_reviews(self, reviews, lang):
         mode = Prefs[KEY_TRANSLATION_MODE]
@@ -176,7 +176,7 @@ class MetaTubeAgent(Agent.Movies):
                 TRANSLATION_MODE_ENUMS[TRANSLATION_MODE_REVIEWS]:
             for review in reviews:
                 review.comment = self.translate_text(review.comment, lang=lang,
-                                                     default=review.comment)
+                                                     fallback=review.comment)
 
     def search(self, results, media, lang, manual=False):
 
