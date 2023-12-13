@@ -25,8 +25,8 @@ def parse_date(s):
         return datetime(1, 1, 1)  # default value
 
 
-def parse_list(s):
-    return [i.strip().upper() for i in s.split(',') if i.strip()]
+def parse_list(s, sep=','):
+    return [i.strip().upper() for i in s.split(sep) if i.strip()]
 
 
 def parse_table(s, sep=',', b64=False, origin_key=False):
@@ -47,15 +47,14 @@ def table_substitute(table, items):
     return [(table[i.upper()] if i.upper() in table else i) for i in items]
 
 
-def has_tag(s, *tags):
-    values = [i.upper() for i in re.split(r'[-_\s]', s)]
-    for tag in tags:
-        if tag.upper() in values:
-            return True
-    return False
-
-
 def has_embedded_chinese_subtitle(video_name):
+    def has_tag(s, *tags):
+        values = [i.upper() for i in re.split(r'[-_\s]', s)]
+        for tag in tags:
+            if tag.upper() in values:
+                return True
+        return False
+
     name, ext = os.path.splitext(
         os.path.basename(video_name))
     if ext.lower() not in VIDEO_EXTENSIONS:
