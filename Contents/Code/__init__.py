@@ -79,16 +79,16 @@ class MetaTubeAgent(Agent.Movies):
             else 'rottentomatoes://image.rating.rotten'
 
     @staticmethod
-    def get_review_image(rating):
-        return 'rottentomatoes://image.review.fresh' \
-            if float(rating) >= 6.0 \
-            else 'rottentomatoes://image.review.rotten'
-
-    @staticmethod
     def get_audience_rating_image(rating):
         return 'rottentomatoes://image.rating.upright' \
             if float(rating) >= 6.0 \
             else 'rottentomatoes://image.rating.spilled'
+
+    @staticmethod
+    def get_review_image(rating):
+        return 'rottentomatoes://image.review.fresh' \
+            if not rating or float(rating) >= 6.0 \
+            else 'rottentomatoes://image.review.rotten'
 
     @staticmethod
     def get_media_attributes(obj, attr, fn=lambda x: x):
@@ -334,8 +334,7 @@ class MetaTubeAgent(Agent.Movies):
                         r = metadata.reviews.new()
                         r.author = review.author
                         r.source = m.provider
-                        r.image = self.get_review_image(review.score * 2) \
-                            if review.score else 'rottentomatoes://image.review.fresh'
+                        r.image = self.get_review_image(review.score * 2)
                         r.link = m.homepage
                         r.text = review.comment
                         _ = review.title  # title is never used
