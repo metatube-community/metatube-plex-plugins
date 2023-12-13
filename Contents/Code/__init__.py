@@ -327,7 +327,8 @@ class MetaTubeAgent(Agent.Movies):
         chapter_min_duration = 10 * 60 * 1000  # 10 minutes
         chapter_gen_interval = 5 * 60 * 1000  # 5 minutes
         # only generate chapters for media with single file
-        durations = [int(p.duration) for p in extra_media_parts(media)]
+        durations = [int(p.duration) for p in extra_media_parts(media)
+                     if int(p.duration) > 0]
         if Prefs[KEY_ENABLE_CHAPTERS] and len(durations) == 1 \
                 and durations[0] > chapter_min_duration:
             duration = durations[0]
