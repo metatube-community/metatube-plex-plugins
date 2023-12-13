@@ -42,6 +42,12 @@ LANGUAGES = [
     Locale.Language.Swedish,
 ]
 
+# File Extensions
+VIDEO_EXTENSIONS = ('.mp4', '.m4v','.mkv', '.wmv', '.avi',
+                    '.ogg', '.flv', '.mov', '.3gp', '.rm', '.rmvb', '.ts', '.mpg')
+SUBTITLE_EXTENSIONS = ('.srt', '.ass', '.ssa', '.smi',
+                       '.sub', '.idx', '.vtt', '.psb')
+
 # Preference Keys
 KEY_API_SERVER = 'api_server'
 KEY_API_TOKEN = 'api_token'

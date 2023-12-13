@@ -4,10 +4,7 @@ import re
 from base64 import b64decode
 from datetime import datetime
 
-from constants import CHINESE_SUBTITLE
-
-VIDEO_EXTENSIONS = ('.mp4', '.wmv', '.avi', '.rm', '.rmvb', '.m4v', 'webm',
-                    '.ogg', '.mkv', '.flv', '.mov', '.3gp', '.ts', '.mpg')
+from constants import *  # import all
 
 
 def parse_date(s):
@@ -70,7 +67,7 @@ def has_external_chinese_subtitle(video_name, *filenames):
         return False
 
     r = re.compile(
-        r'\.(chinese|ch[ist]|zh(-(cn|hk|tw|hans|hant))?)\.(ass|srt|ssa|stl|sub|vid|vtt)$', re.IGNORECASE)
+        r'\.(ch[ist]|zho?(-(cn|hk|sg|tw))?)\.(ass|srt|ssa|smi|sub|idx|psb|vtt)$', re.IGNORECASE)
     for filename in filenames:
         if r.search(filename) and r.sub('', filename).upper() == basename.upper():
             return True
