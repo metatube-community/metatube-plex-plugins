@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
 
-from api_client import api, MovieSearchResult
-from constants import *  # import all constants
+import utils
+from api_client import api
+from constants import *
 from provider_id import ProviderID
-from utils import parse_list, parse_table, table_substitute, \
-    average, has_chinese_subtitle, extra_media_parts
 
 try:  # Python 2
     from urllib import unquote
@@ -143,7 +142,7 @@ class MetaTubeAgent(Agent.Movies):
             return translated_text
 
         engine = Prefs[KEY_TRANSLATION_ENGINE]
-        params = parse_table(Prefs[KEY_TRANSLATION_ENGINE_PARAMETERS], origin_key=True)
+        params = utils.parse_table(Prefs[KEY_TRANSLATION_ENGINE_PARAMETERS], origin_key=True)
 
         try:
             translated_text = api.translate(q=text, to=lang, engine=engine,
@@ -176,7 +175,7 @@ class MetaTubeAgent(Agent.Movies):
     def search(self, results, media, lang, manual=False):
 
         position = None
-        search_results = []  # type: list[MovieSearchResult]
+        search_results = []
 
         # issued by scanning or auto match
         if (not manual or media.openSubtitlesHash) \
@@ -199,7 +198,7 @@ class MetaTubeAgent(Agent.Movies):
 
         # apply movie provider filter
         if Prefs[KEY_ENABLE_MOVIE_PROVIDER_FILTER]:
-            movie_provider_filter = parse_list(Prefs[KEY_MOVIE_PROVIDER_FILTER])
+            movie_provider_filter = utils.parse_list(Prefs[KEY_MOVIE_PROVIDER_FILTER])
             if movie_provider_filter:
                 search_results = [i for i in search_results
                                   if i.provider.upper() in movie_provider_filter]
@@ -253,8 +252,8 @@ class MetaTubeAgent(Agent.Movies):
 
         # Detect Chinese Subtitles
         chinese_subtitle_on = False
-        for filename in (p.file for p in extra_media_parts(media)):
-            if has_chinese_subtitle(filename):
+        for filename in (p.file for p in utils.extra_media_parts(media)):
+            if utils.has_chinese_subtitle(filename):
                 chinese_subtitle_on = True
                 m.genres.append(CHINESE_SUBTITLE)
                 Log.Debug('Chinese subtitle detected for {filename}'
@@ -266,12 +265,14 @@ class MetaTubeAgent(Agent.Movies):
             self.convert_to_real_actor_names(m)
 
         if Prefs[KEY_ENABLE_ACTOR_SUBSTITUTION] and Prefs[KEY_ACTOR_SUBSTITUTION]:
-            m.actors = table_substitute(parse_table(Prefs[KEY_ACTOR_SUBSTITUTION],
-                                                    sep='\n', b64=True), m.actors)
+            m.actors = utils.table_substitute(
+                utils.parse_table(Prefs[KEY_ACTOR_SUBSTITUTION],
+                                  sep='\n', b64=True), m.actors)
 
         if Prefs[KEY_ENABLE_GENRE_SUBSTITUTION] and Prefs[KEY_GENRE_SUBSTITUTION]:
-            m.genres = table_substitute(parse_table(Prefs[KEY_GENRE_SUBSTITUTION],
-                                                    sep='\n', b64=True), m.genres)
+            m.genres = utils.table_substitute(
+                utils.parse_table(Prefs[KEY_GENRE_SUBSTITUTION],
+                                  sep='\n', b64=True), m.genres)
 
         # Translate Info
         if Prefs[KEY_TRANSLATION_MODE] != TRANSLATION_MODE_DISABLED:
@@ -327,7 +328,7 @@ class MetaTubeAgent(Agent.Movies):
         chapter_min_duration = 10 * 60 * 1000  # 10 minutes
         chapter_gen_interval = 5 * 60 * 1000  # 5 minutes
         # only generate chapters for media with single file
-        durations = [int(p.duration) for p in extra_media_parts(media)
+        durations = [int(p.duration) for p in utils.extra_media_parts(media)
                      if int(p.duration) > 0]
         if Prefs[KEY_ENABLE_CHAPTERS] and len(durations) == 1 \
                 and durations[0] > chapter_min_duration:
@@ -370,7 +371,7 @@ class MetaTubeAgent(Agent.Movies):
 
                     # Audience Rating
                     scores = [i for i in reviews if i.score > 0]
-                    metadata.audience_rating = average(scores) * 2
+                    metadata.audience_rating = utils.average(scores) * 2
                     metadata.audience_rating_image = self.get_audience_rating_image(metadata.audience_rating)
 
         # Director

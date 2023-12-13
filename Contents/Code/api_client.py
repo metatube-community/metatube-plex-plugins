@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from constants import DEFAULT_USER_AGENT, KEY_API_SERVER, KEY_API_TOKEN
+from constants import *
 from utils import parse_date
 
 try:  # Python 2

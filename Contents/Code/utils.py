@@ -4,7 +4,7 @@ import re
 from base64 import b64decode
 from datetime import datetime
 
-from constants import *  # import all
+from constants import *
 
 
 def average(a):
