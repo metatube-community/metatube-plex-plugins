@@ -370,7 +370,7 @@ class MetaTubeAgent(Agent.Movies):
                         _ = review.title  # title is never used
 
                     # Audience Rating
-                    scores = [i for i in reviews if i.score > 0]
+                    scores = [i.score for i in reviews if i.score > 0]
                     metadata.audience_rating = utils.average(scores) * 2
                     metadata.audience_rating_image = self.get_audience_rating_image(metadata.audience_rating)
 
