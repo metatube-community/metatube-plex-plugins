@@ -43,8 +43,9 @@ LANGUAGES = [
 ]
 
 # File Extensions
-VIDEO_EXTENSIONS = ('.mp4', '.m4v','.mkv', '.wmv', '.avi',
-                    '.ogg', '.flv', '.mov', '.3gp', '.rm', '.rmvb', '.ts', '.mpg')
+VIDEO_EXTENSIONS = ('.mp4', '.m4v', '.mkv', '.wmv', '.avi',
+                    '.flv', '.mov', '.3gp', '.rm', '.rmvb',
+                    '.ts', '.m2ts', '.mpegts', '.mpeg')
 SUBTITLE_EXTENSIONS = ('.srt', '.ass', '.ssa', '.smi',
                        '.sub', '.idx', '.vtt', '.psb')
 
