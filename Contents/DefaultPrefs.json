@@ -36,6 +36,12 @@
     "default": "true"
   },
   {
+    "id": "enable_reviews",
+    "label": "Enable reviews",
+    "type": "bool",
+    "default": "true"
+  },
+  {
     "id": "enable_trailers",
     "label": "Enable trailers",
     "type": "bool",

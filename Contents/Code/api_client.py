@@ -81,6 +81,15 @@ class MovieInfoObject(MovieSearchResult):
         self.preview_video_hls_url = data['preview_video_hls_url']  # type: str
 
 
+class MovieReviewObject(object):
+    def __init__(self, **data):
+        self.title = data['title']  # type: str
+        self.author = data['author']  # type: str
+        self.comment = data['comment']  # type: str
+        self.score = float(data['score'])  # type: float
+        self.date = parse_date(data['date'])  # type: datetime
+
+
 class TranslationInfoObject(object):
     def __init__(self, **data):
         self.translated_text = data['translated_text']  # type: str
@@ -93,6 +102,7 @@ class APIError(Exception):
 class APIClient(object):
     ACTOR_INFO_API = '/v1/actors/{0}/{1}'
     MOVIE_INFO_API = '/v1/movies/{0}/{1}'
+    MOVIE_REVIEW_API = '/v1/reviews/{0}/{1}'
     ACTOR_SEARCH_API = '/v1/actors/search'
     MOVIE_SEARCH_API = '/v1/movies/search'
     PRIMARY_IMAGE_API = '/v1/images/primary/{0}/{1}'
@@ -168,6 +178,13 @@ class APIClient(object):
                 self.MOVIE_INFO_API, provider, id,
                 lazy=lazy),
             require_auth=True))
+
+    def get_movie_reviews(self, provider, id, homepage=None):
+        return [MovieReviewObject(**data) for data in self.get_json(
+            url=self.prepare_url(
+                self.MOVIE_REVIEW_API, provider, id,
+                homepage=homepage),
+            require_auth=True)]
 
     def get_primary_image_url(self, provider, id,
                               url=None,
