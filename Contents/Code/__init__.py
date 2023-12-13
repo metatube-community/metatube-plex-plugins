@@ -337,8 +337,8 @@ class MetaTubeAgent(Agent.Movies):
                         r.image = self.get_review_image(review.score * 2) \
                             if review.score else 'rottentomatoes://image.review.fresh'
                         r.link = m.homepage
-                        r.text = review.comment if not review.title else \
-                            '{title}\n\n{comment}'.format(title=review.title, comment=review.comment)
+                        r.text = review.comment
+                        _ = review.title  # title is never used
 
                     # Audience Rating
                     scores = float(0)
