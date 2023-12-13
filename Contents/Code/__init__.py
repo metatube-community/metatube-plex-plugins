@@ -347,7 +347,7 @@ class MetaTubeAgent(Agent.Movies):
                         if i.score > 0:
                             scores += i.score
                             totals += 1
-                    metadata.audience_rating = scores / totals
+                    metadata.audience_rating = (scores / totals) * 2
                     metadata.audience_rating_image = self.get_audience_rating_image(metadata.audience_rating)
 
         # Chapters
