@@ -74,16 +74,18 @@ class MetaTubeAgent(Agent.Movies):
 
     @staticmethod
     def get_rating_image(rating):
-        if not rating:
-            return
         return 'rottentomatoes://image.rating.ripe' \
             if float(rating) >= 6.0 \
             else 'rottentomatoes://image.rating.rotten'
 
     @staticmethod
+    def get_review_image(rating):
+        return 'rottentomatoes://image.review.fresh' \
+            if float(rating) >= 6.0 \
+            else 'rottentomatoes://image.review.rotten'
+
+    @staticmethod
     def get_audience_rating_image(rating):
-        if not rating:
-            return
         return 'rottentomatoes://image.rating.upright' \
             if float(rating) >= 6.0 \
             else 'rottentomatoes://image.rating.spilled'
@@ -332,15 +334,23 @@ class MetaTubeAgent(Agent.Movies):
                         r = metadata.reviews.new()
                         r.author = review.author
                         r.source = m.provider
-                        r.image = self.get_rating_image(review.score * 2)
+                        r.image = self.get_review_image(review.score * 2) \
+                            if review.score else 'rottentomatoes://image.review.fresh'
                         r.link = m.homepage
                         r.text = review.comment if not review.title else \
                             '{title}\n\n{comment}'.format(title=review.title, comment=review.comment)
-                    scores = [i.score for i in reviews if i.score > 0]
-                    metadata.audience_rating = sum(scores) / len(scores)
+
+                    # Audience Rating
+                    scores = float(0)
+                    totals = int(0)
+                    for i in reviews:
+                        if i.score > 0:
+                            scores += i.score
+                            totals += 1
+                    metadata.audience_rating = scores / totals
                     metadata.audience_rating_image = self.get_audience_rating_image(metadata.audience_rating)
 
-                    # Chapters
+        # Chapters
         metadata.chapters.clear()
         # only generate chapters for the first video file
         durations = self.get_media_attributes(media, 'duration', fn=int)
