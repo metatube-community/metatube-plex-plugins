@@ -75,7 +75,8 @@ class MetaTubeAgent(Agent.Movies):
     @staticmethod
     def get_rating_image(rating):
         return 'rottentomatoes://image.rating.ripe' \
-            if float(rating) >= 6.0 else 'rottentomatoes://image.rating.rotten'
+            if float(rating) >= 6.0 or float(rating) <= 0 \
+            else 'rottentomatoes://image.rating.rotten'
 
     @staticmethod
     def get_media_attributes(obj, attr, fn=lambda x: x):
@@ -216,7 +217,7 @@ class MetaTubeAgent(Agent.Movies):
 
         return results
 
-    def update(self, metadata, media, lang, force=False):
+    def update(self, metadata: Movie, media, lang, force=False):
 
         if force:
             Log.Debug('Force metadata refreshing')
@@ -311,14 +312,20 @@ class MetaTubeAgent(Agent.Movies):
 
         # Reviews
         metadata.reviews.clear()
-
-        # if None:
-        #     r = metadata.reviews.new()
-        #     r.author = review.get('critic')
-        #     r.source = review.get('publication')
-        #     r.image = 'rottentomatoes://image.review.fresh'
-        #     r.link = review.get('link')
-        #     r.text = review.text
+        if Prefs[KEY_ENABLE_REVIEWS] and m.score:
+            try:
+                reviews = api.get_movie_reviews(m.provider, m.id, homepage=m.homepage)
+            except Exception as e:
+                Log.Warn('Get reviews for {id} failed {error}'.format(id=m.id, error=e))
+            else:
+                for review in reviews:
+                    r = metadata.reviews.new()
+                    r.author = review.author
+                    r.source = m.provider
+                    r.image = self.get_rating_image(review.score * 2)
+                    r.link = m.homepage
+                    r.text = review.comment if not review.title else \
+                        '{title}\n\n{comment}'.format(title=review.title, comment=review.comment)
 
         # Chapters
         metadata.chapters.clear()
