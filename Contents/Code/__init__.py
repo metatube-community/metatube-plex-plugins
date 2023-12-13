@@ -185,7 +185,7 @@ class MetaTubeAgent(Agent.Movies):
                 )
                 position = pid.position  # update position
                 search_results.append(api.get_movie_info(
-                    pid.provider, pid.id, pid.update is not True))
+                    provider=pid.provider, id=pid.id, lazy=(pid.update is not True)))
             except ValueError:  # fallback to name based search
                 search_results = api.search_movie(q=media.name)
 
@@ -290,7 +290,9 @@ class MetaTubeAgent(Agent.Movies):
         # Basic Metadata
         metadata.summary = m.summary
         metadata.original_title = original_title
-        metadata.tagline = DEFAULT_TAGLINE_TEMPLATE.format(date=release_date)
+
+        # Set pid to tagline field
+        metadata.tagline = '{pid:s}'.format(pid=pid)
 
         # Content Rating
         metadata.content_rating = DEFAULT_RATING

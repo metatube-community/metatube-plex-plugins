@@ -12,16 +12,13 @@ else:  # the code is running outside of Plex
 PLUGIN_NAME = 'MetaTube'
 DEFAULT_USER_AGENT = '%s.bundle' % PLUGIN_NAME
 
-# Content Rating
-DEFAULT_RATING = 'JP-18+'
-DEFAULT_COUNTRY = 'Japan'
-
 # Chinese Subtitle
 CHINESE_SUBTITLE = '中文字幕'
 
 # Default Values
+DEFAULT_RATING = 'JP-18+'
+DEFAULT_COUNTRY = 'Japan'
 DEFAULT_TITLE_TEMPLATE = '{number} {title}'
-DEFAULT_TAGLINE_TEMPLATE = '配信開始日 {date}'
 
 # Supported Languages
 LANGUAGES = [
@@ -44,6 +41,13 @@ LANGUAGES = [
     Locale.Language.Dutch,
     Locale.Language.Swedish,
 ]
+
+# File Extensions
+VIDEO_EXTENSIONS = ('.mp4', '.m4v', '.mkv', '.wmv', '.avi',
+                    '.flv', '.mov', '.3gp', '.rm', '.rmvb',
+                    '.ts', '.m2ts', '.mpegts', '.mpeg')
+SUBTITLE_EXTENSIONS = ('.srt', '.ass', '.ssa', '.smi',
+                       '.sub', '.idx', '.vtt', '.psb')
 
 # Preference Keys
 KEY_API_SERVER = 'api_server'
