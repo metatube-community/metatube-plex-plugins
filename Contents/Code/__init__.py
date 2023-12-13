@@ -290,7 +290,9 @@ class MetaTubeAgent(Agent.Movies):
         # Basic Metadata
         metadata.summary = m.summary
         metadata.original_title = original_title
-        metadata.tagline = DEFAULT_TAGLINE_TEMPLATE.format(date=release_date)
+
+        # Set pid to tagline field
+        metadata.tagline = '{pid:s}'.format(pid=pid)
 
         # Content Rating
         metadata.content_rating = DEFAULT_RATING

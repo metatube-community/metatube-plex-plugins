@@ -12,16 +12,13 @@ else:  # the code is running outside of Plex
 PLUGIN_NAME = 'MetaTube'
 DEFAULT_USER_AGENT = '%s.bundle' % PLUGIN_NAME
 
-# Content Rating
-DEFAULT_RATING = 'JP-18+'
-DEFAULT_COUNTRY = 'Japan'
-
 # Chinese Subtitle
 CHINESE_SUBTITLE = '中文字幕'
 
 # Default Values
+DEFAULT_RATING = 'JP-18+'
+DEFAULT_COUNTRY = 'Japan'
 DEFAULT_TITLE_TEMPLATE = '{number} {title}'
-DEFAULT_TAGLINE_TEMPLATE = '配信開始日 {date}'
 
 # Supported Languages
 LANGUAGES = [
