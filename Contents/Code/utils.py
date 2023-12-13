@@ -4,7 +4,16 @@ import re
 from base64 import b64decode
 from datetime import datetime
 
-from constants import *  # import all
+from constants import *
+
+
+def average(a):
+    x = 0.0
+    if not a:
+        return x
+    for i in a:
+        x = x + i
+    return x / len(a)
 
 
 def parse_date(s):
@@ -77,3 +86,36 @@ def has_external_chinese_subtitle(video_name, *filenames):
 def has_chinese_subtitle(video_name):
     return has_embedded_chinese_subtitle(video_name) or \
         has_external_chinese_subtitle(video_name)
+
+
+def extra_media_parts(obj):
+    if not hasattr(obj, 'all_parts'):
+        return ()
+    return [part for part in obj.all_parts()
+            if hasattr(part, 'file') and hasattr(part, 'duration')]
+
+
+def extra_media_durations(obj):
+    parts = extra_media_parts(obj)
+
+    # single file version
+    if len(parts) == 1:
+        return {parts[0].file: int(parts[0].duration)}
+
+    # multi-disk file match
+    r = re.compile(r'-\s*(cd|disc|disk|dvd|pt|part)(\d+)$', re.IGNORECASE)
+
+    durations = {}
+    for part in parts:
+        if int(part.duration) > 0:
+            name, ext = os.path.splitext(part.file)
+
+            if r.search(name):
+                key = re.sub(r'\d+$', '', name) + ext
+            else:
+                key = name + ext
+
+            durations.setdefault(key, 0)
+            durations[key] = durations[key] + int(part.duration)
+
+    return durations
