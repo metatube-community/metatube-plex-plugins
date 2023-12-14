@@ -131,7 +131,7 @@ class MetaTubeAgent(Agent.Movies):
             Log.Warn('Convert to real actor names error: {number} ({error})'.format(number=m.number, error=e))
 
     @staticmethod
-    def translate_movie_info(self, m, lang):
+    def translate_movie_info(m, lang):
         mode = Prefs[KEY_TRANSLATION_MODE]
 
         if TRANSLATION_MODE_ENUMS[mode] & \
@@ -143,7 +143,7 @@ class MetaTubeAgent(Agent.Movies):
             m.summary = translate_text(m.summary, lang=lang, fallback=m.summary)
 
     @staticmethod
-    def translate_reviews(self, reviews, lang):
+    def translate_reviews(reviews, lang):
         mode = Prefs[KEY_TRANSLATION_MODE]
 
         if TRANSLATION_MODE_ENUMS[mode] & \
