@@ -7,6 +7,7 @@ from random import choice
 import utils
 from api_client import api
 from constants import *
+from localmedia import findSubtitles
 from provider_id import ProviderID
 from translator import translate_text
 
@@ -245,6 +246,10 @@ class MetaTubeAgent(Agent.Movies):
                           .format(filename=filename))
                 break
 
+        # Look for Subtitles
+        for part in utils.extra_media_parts(media):
+            findSubtitles(part)
+
         # Apply Preferences
         if Prefs[KEY_ENABLE_REAL_ACTOR_NAMES]:
             self.convert_to_real_actor_names(m)
@@ -285,7 +290,7 @@ class MetaTubeAgent(Agent.Movies):
         metadata.summary = m.summary
         metadata.original_title = original_title
 
-        # Set pid to tagline field
+        # Set pid to Tagline
         metadata.tagline = '{pid:s}'.format(pid=pid)
 
         # Content Rating
