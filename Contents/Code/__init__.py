@@ -188,7 +188,7 @@ class MetaTubeAgent(Agent.Movies):
                 Log.Warn('Movie provider filter enabled but never used')
 
         if not search_results:
-            Log.Warn('Movie not found: {items}'.format(items=vars(media)))
+            Log.Warn('Movie not found: {name}'.format(name=media.name))
             return results
 
         for i, m in enumerate(search_results):
