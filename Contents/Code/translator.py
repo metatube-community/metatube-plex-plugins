@@ -45,7 +45,7 @@ def translate_text(text, lang, fallback=None):
                      .format(lang=lang, forced_lang=forced_lang))
             lang = forced_lang
 
-        # Limit translate request rate to 1 rps.
+        # limit translate request rate to 1 rps.
         time.sleep(1.0)
 
         try:
