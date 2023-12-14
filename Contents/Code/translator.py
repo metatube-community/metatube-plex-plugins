@@ -16,13 +16,17 @@ else:  # the code is running outside of Plex
     from plexhints.log_kit import Log  # log kit
     from plexhints.prefs_kit import Prefs  # prefs kit
 
-translator_lock = threading.Lock()
+TRANSLATOR_LOCK = threading.Lock()
 
 
 def translate_text(text, lang, fallback=None):
-    with translator_lock:
+    with TRANSLATOR_LOCK:
 
         translated_text = fallback
+
+        if not text:
+            Log.Warn('Translation text is empty')
+            return translated_text
 
         if Prefs[KEY_TRANSLATION_MODE] == TRANSLATION_MODE_DISABLED:
             Log.Warn('Translation is disabled')

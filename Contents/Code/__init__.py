@@ -135,11 +135,11 @@ class MetaTubeAgent(Agent.Movies):
         mode = Prefs[KEY_TRANSLATION_MODE]
 
         if TRANSLATION_MODE_ENUMS[mode] & \
-                TRANSLATION_MODE_ENUMS[TRANSLATION_MODE_TITLE]:
+                TRANSLATION_MODE_ENUMS[TRANSLATION_MODE_TITLE] and m.title:
             m.title = translate_text(m.title, lang=lang, fallback=m.title)
 
         if TRANSLATION_MODE_ENUMS[mode] & \
-                TRANSLATION_MODE_ENUMS[TRANSLATION_MODE_SUMMARY]:
+                TRANSLATION_MODE_ENUMS[TRANSLATION_MODE_SUMMARY] and m.summary:
             m.summary = translate_text(m.summary, lang=lang, fallback=m.summary)
 
     @staticmethod
@@ -149,8 +149,9 @@ class MetaTubeAgent(Agent.Movies):
         if TRANSLATION_MODE_ENUMS[mode] & \
                 TRANSLATION_MODE_ENUMS[TRANSLATION_MODE_REVIEWS]:
             for review in reviews:
-                review.comment = translate_text(review.comment, lang=lang,
-                                                fallback=review.comment)
+                if review.comment:
+                    review.comment = translate_text(review.comment, lang=lang,
+                                                    fallback=review.comment)
 
     def search(self, results, media, lang, manual=False):
 
