@@ -41,9 +41,11 @@ def translate_text(text, lang, fallback=None):
 
         forced_lang = params.pop('to', None)
         if forced_lang:
-            Log.Warn('Force translation language from {lang} to {forced_lang}: {text}'
-                     .format(lang=lang, forced_lang=forced_lang, text=text))
+            Log.Info('Force setting translation language from {lang} to {forced_lang}'
+                     .format(lang=lang, forced_lang=forced_lang))
             lang = forced_lang
+
+        Log.Info('Translate text to {lang}: {text}'.format(lang=lang, text=text))
 
         # limit translate request rate to 1 rps.
         time.sleep(1.0)
