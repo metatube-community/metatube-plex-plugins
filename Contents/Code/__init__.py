@@ -144,6 +144,12 @@ class MetaTubeAgent(Agent.Movies):
         engine = Prefs[KEY_TRANSLATION_ENGINE]
         params = utils.parse_table(Prefs[KEY_TRANSLATION_ENGINE_PARAMETERS], origin_key=True)
 
+        forced_lang = params.get('to')
+        if forced_lang:
+            Log.Warn('Force translation language to to {forced_lang}'
+                     .format(forced_lang=forced_lang))
+            lang = forced_lang
+
         try:
             translated_text = api.translate(q=text, to=lang, engine=engine,
                                             **params).translated_text
