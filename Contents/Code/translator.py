@@ -41,8 +41,8 @@ def translate_text(text, lang, fallback=None):
 
         forced_lang = params.pop('to', None)
         if forced_lang:
-            Log.Warn('Force translation language to to {forced_lang}'
-                     .format(forced_lang=forced_lang))
+            Log.Warn('Force translation language from {lang} to {forced_lang}'
+                     .format(lang=lang, forced_lang=forced_lang))
             lang = forced_lang
 
         # mandatory rps limit
