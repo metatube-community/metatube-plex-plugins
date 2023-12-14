@@ -323,32 +323,6 @@ class MetaTubeAgent(Agent.Movies):
         if m.runtime:
             metadata.duration = m.runtime * 60 * 1000  # millisecond
 
-        # Chapters
-        metadata.chapters.clear()
-        chapter_min_duration = 10 * 60 * 1000  # 10 minutes
-        chapter_gen_interval = 5 * 60 * 1000  # 5 minutes
-        # only generate chapters for media with single file
-        durations = [int(p.duration) for p in utils.extra_media_parts(media)
-                     if int(p.duration) > 0]
-        if Prefs[KEY_ENABLE_CHAPTERS]:
-            if not durations:
-                Log.Warn('Chapter: no valid duration for media: {id}'
-                         .format(id=metadata.id))
-            elif len(durations) > 1:
-                Log.Warn('Chapter: ignore multi-part media: {id}'
-                         .format(id=metadata.id))
-            elif durations[0] < chapter_min_duration:
-                Log.Warn('Chapter: ignore short-duration media: {id}'
-                         .format(id=metadata.id))
-            else:
-                duration = durations[0]
-                for i, offset in enumerate(range(0, duration, chapter_gen_interval)):
-                    start, end = offset, offset + chapter_gen_interval
-                    chapter = metadata.chapters.new()
-                    chapter.title = 'Chapter {i}'.format(i=(i + 1))
-                    chapter.start_time_offset = start
-                    chapter.end_time_offset = end if end < duration else duration
-
         # Clear Ratings
         metadata.rating = 0.0
         metadata.audience_rating = 0.0
