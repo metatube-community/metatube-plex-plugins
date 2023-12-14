@@ -41,17 +41,30 @@ def translate_text(text, lang, fallback=None):
 
         forced_lang = params.pop('to', None)
         if forced_lang:
-            Log.Warn('Force translation language from {lang} to {forced_lang}'
+            Log.Info('Force setting translation language from {lang} to {forced_lang}'
                      .format(lang=lang, forced_lang=forced_lang))
             lang = forced_lang
+
+        Log.Info('Translate text to {lang}: {text}'.format(lang=lang, text=text))
 
         # limit translate request rate to 1 rps.
         time.sleep(1.0)
 
+        def translate():
+            return api.translate(q=text, to=lang, engine=engine,
+                                 **params).translated_text
+
+        return retry(func=translate, fallback=translated_text)
+
+
+def retry(func, fallback=None, count=3):
+    i = 1
+    while i <= count:
         try:
-            translated_text = api.translate(q=text, to=lang, engine=engine,
-                                            **params).translated_text
+            return func()
         except Exception as e:
-            Log.Warn('Translate error: {error}'.format(error=e))
-        finally:
-            return translated_text
+            Log.Warn('Retry function {func} ({count}): {error}'
+                     .format(func=getattr(func, '__name__', func),
+                             count=i, error=e))
+        i = i + 1
+    return fallback
