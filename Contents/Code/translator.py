@@ -39,7 +39,7 @@ def translate_text(text, lang, fallback=None):
         engine = Prefs[KEY_TRANSLATION_ENGINE]
         params = utils.parse_table(Prefs[KEY_TRANSLATION_ENGINE_PARAMETERS], origin_key=True)
 
-        forced_lang = params.get('to')
+        forced_lang = params.pop('to', None)
         if forced_lang:
             Log.Warn('Force translation language to to {forced_lang}'
                      .format(forced_lang=forced_lang))
