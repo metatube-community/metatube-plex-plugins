@@ -4,6 +4,7 @@ import utils
 from api_client import api
 from constants import *
 from provider_id import ProviderID
+from translator import translate_text
 
 try:  # Python 2
     from urllib import unquote
@@ -130,53 +131,26 @@ class MetaTubeAgent(Agent.Movies):
             Log.Warn('Convert to real actor names error: {number} ({error})'.format(number=m.number, error=e))
 
     @staticmethod
-    def translate_text(text, lang, fallback=None):
-        translated_text = fallback
-
-        if Prefs[KEY_TRANSLATION_MODE] == TRANSLATION_MODE_DISABLED:
-            Log.Warn('Translation is disabled')
-            return translated_text
-
-        if lang == Locale.Language.Japanese:
-            Log.Warn('Translation not applied to Japanese')
-            return translated_text
-
-        engine = Prefs[KEY_TRANSLATION_ENGINE]
-        params = utils.parse_table(Prefs[KEY_TRANSLATION_ENGINE_PARAMETERS], origin_key=True)
-
-        forced_lang = params.get('to')
-        if forced_lang:
-            Log.Warn('Force translation language to to {forced_lang}'
-                     .format(forced_lang=forced_lang))
-            lang = forced_lang
-
-        try:
-            translated_text = api.translate(q=text, to=lang, engine=engine,
-                                            **params).translated_text
-        except Exception as e:
-            Log.Warn('Translate error: {error}'.format(error=e))
-        finally:
-            return translated_text
-
     def translate_movie_info(self, m, lang):
         mode = Prefs[KEY_TRANSLATION_MODE]
 
         if TRANSLATION_MODE_ENUMS[mode] & \
                 TRANSLATION_MODE_ENUMS[TRANSLATION_MODE_TITLE]:
-            m.title = self.translate_text(m.title, lang=lang, fallback=m.title)
+            m.title = translate_text(m.title, lang=lang, fallback=m.title)
 
         if TRANSLATION_MODE_ENUMS[mode] & \
                 TRANSLATION_MODE_ENUMS[TRANSLATION_MODE_SUMMARY]:
-            m.summary = self.translate_text(m.summary, lang=lang, fallback=m.summary)
+            m.summary = translate_text(m.summary, lang=lang, fallback=m.summary)
 
+    @staticmethod
     def translate_reviews(self, reviews, lang):
         mode = Prefs[KEY_TRANSLATION_MODE]
 
         if TRANSLATION_MODE_ENUMS[mode] & \
                 TRANSLATION_MODE_ENUMS[TRANSLATION_MODE_REVIEWS]:
             for review in reviews:
-                review.comment = self.translate_text(review.comment, lang=lang,
-                                                     fallback=review.comment)
+                review.comment = translate_text(review.comment, lang=lang,
+                                                fallback=review.comment)
 
     def search(self, results, media, lang, manual=False):
 
