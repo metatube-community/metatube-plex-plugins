@@ -10,7 +10,7 @@ on:
       - 'main'
     paths:
       - '.github/workflows/release.yml'
-      - 'Contents/**'
+      - '*.bundle/**'
 
 jobs:
   bundle:
@@ -31,16 +31,19 @@ jobs:
       - name: Make bundle
         run: |
           echo v${{ steps.shell.outputs.version }}-${{ steps.shell.outputs.commit }} | tee VERSION
-          mkdir -p MetaTube.bundle/
-          mv LICENSE   MetaTube.bundle/
-          mv VERSION   MetaTube.bundle/
-          mv Contents/ MetaTube.bundle/
+          cp LICENSE   MetaTube.bundle/
+          cp VERSION   MetaTube.bundle/
+          cp LICENSE   MetaTubeHelper.bundle/
+          cp VERSION   MetaTubeHelper.bundle/
           zip -r MetaTube.bundle.zip MetaTube.bundle/
+          zip -r MetaTubeHelper.bundle.zip MetaTubeHelper.bundle/
 
       - name: Upload Releases
         uses: softprops/action-gh-release@v1
         with:
-          files: MetaTube.bundle.zip
+          files: |
+            MetaTube.bundle.zip
+            MetaTubeHelper.bundle.zip
           body: _Auto Released by GitHub Actions_
           name: v${{ steps.shell.outputs.version }}
           tag_name: bundle
