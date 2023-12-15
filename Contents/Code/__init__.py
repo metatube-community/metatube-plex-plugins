@@ -72,7 +72,7 @@ class MetaTubeAgent(Agent.Movies):
 
     # Workaround:
     # - using semaphores to prevent DB corruption
-    agent_refresh_semaphore = threading.Semaphore(1)
+    agent_global_semaphore = threading.Semaphore(1)
 
     @staticmethod
     def parse_filename(filename):
@@ -159,7 +159,7 @@ class MetaTubeAgent(Agent.Movies):
                                                     fallback=review.comment)
 
     def search(self, results, media, lang, manual=False):
-        with self.agent_refresh_semaphore:
+        with self.agent_global_semaphore:
             return self.search_media(results, media, lang, manual)
 
     def search_media(self, results, media, lang, manual=False):
@@ -227,7 +227,7 @@ class MetaTubeAgent(Agent.Movies):
         return results
 
     def update(self, metadata, media, lang, force=False):
-        with self.agent_refresh_semaphore:
+        with self.agent_global_semaphore:
             return self.update_media(metadata, media, lang, force)
 
     def update_media(self, metadata, media, lang, force=False):
