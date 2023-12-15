@@ -5,5 +5,5 @@ contact_links:
     url: https://metatube-community.github.io/wiki/
     about: Please see the wiki for configuration and examples
   - name: MetaTube GitHub Discussions
-    url: https://github.com/metatube-community/MetaTube.bundle/discussions
+    url: https://github.com/metatube-community/metatube-plex-plugins/discussions
     about: Ask questions and get help on GitHub Discussions
