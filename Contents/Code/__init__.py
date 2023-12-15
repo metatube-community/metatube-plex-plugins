@@ -1,20 +1,14 @@
 # -*- coding: utf-8 -*-
 
+import threading
+from base64 import urlsafe_b64encode
+from random import choice
+
 import utils
 from api_client import api
 from constants import *
 from provider_id import ProviderID
 from translator import translate_text
-
-try:  # Python 2
-    from urllib import unquote
-except ImportError:  # Python 3
-    from urllib.parse import unquote
-finally:
-    import threading
-    from base64 import urlsafe_b64encode
-    from os.path import basename
-    from random import choice
 
 # plex debugging
 try:
@@ -73,10 +67,6 @@ class MetaTubeAgent(Agent.Movies):
     # Workaround:
     # - using a semaphore to prevent DB corruption
     agent_global_semaphore = threading.Semaphore(1)
-
-    @staticmethod
-    def parse_filename(filename):
-        return basename(unquote(filename))
 
     @staticmethod
     def get_rating_image(rating):
@@ -162,6 +152,7 @@ class MetaTubeAgent(Agent.Movies):
         with self.agent_global_semaphore:
             return self.search_media(results, media, lang, manual)
 
+    # noinspection PyMethodMayBeStatic
     def search_media(self, results, media, lang, manual=False):
 
         position = None
@@ -171,7 +162,7 @@ class MetaTubeAgent(Agent.Movies):
         if (not manual or media.openSubtitlesHash) \
                 and media.filename:
             search_results = api.search_movie(
-                q=self.parse_filename(media.filename))
+                q=utils.parse_filename_without_ext(media.filename))
         else:
             try:  # exact match by provider and id
                 if not media.year or \

@@ -6,6 +6,11 @@ from datetime import datetime
 
 from constants import *
 
+try:  # Python 2
+    from urllib import unquote
+except ImportError:  # Python 3
+    from urllib.parse import unquote
+
 
 def average(a):
     x = 0.0
@@ -14,6 +19,14 @@ def average(a):
     for i in a:
         x = x + i
     return x / len(a)
+
+
+def parse_filename(filename):
+    return os.path.basename(unquote(filename))
+
+
+def parse_filename_without_ext(filename):
+    return os.path.splitext(parse_filename(filename))[0]
 
 
 def parse_date(s):
