@@ -2,7 +2,7 @@
 
 import threading
 
-from localmedia import find_subtitles
+from localmedia import find_local_subtitles
 
 # plex debugging
 try:
@@ -35,7 +35,7 @@ class MetaTubeHelper(Agent.Movies):
         with self.helper_global_semaphore:
 
             # Look for subtitles
-            if Prefs['find_subtitles']:
+            if Prefs['find_local_subtitles']:
                 for item in media.items:
                     for part in item.parts:
-                        find_subtitles(part)
+                        find_local_subtitles(part)

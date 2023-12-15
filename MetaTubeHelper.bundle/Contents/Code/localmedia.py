@@ -70,7 +70,7 @@ def unicodize(s):
     return s
 
 
-def find_subtitles(part):
+def find_local_subtitles(part):
     RE_METAFILES = re.compile(r'^[.~]')
 
     lang_sub_map = {}
