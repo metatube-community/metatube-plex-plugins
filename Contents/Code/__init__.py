@@ -11,6 +11,7 @@ try:  # Python 2
 except ImportError:  # Python 3
     from urllib.parse import unquote
 finally:
+    import threading
     from base64 import urlsafe_b64encode
     from os.path import basename
     from random import choice
@@ -68,6 +69,10 @@ class MetaTubeAgent(Agent.Movies):
                     'com.plexapp.agents.lambda',
                     'com.plexapp.agents.xbmcnfo']
     contributes_to = ['com.plexapp.agents.none']
+
+    # Workaround:
+    # - using a semaphore to prevent DB corruption
+    agent_global_semaphore = threading.Semaphore(1)
 
     @staticmethod
     def parse_filename(filename):
@@ -154,6 +159,10 @@ class MetaTubeAgent(Agent.Movies):
                                                     fallback=review.comment)
 
     def search(self, results, media, lang, manual=False):
+        with self.agent_global_semaphore:
+            return self.search_media(results, media, lang, manual)
+
+    def search_media(self, results, media, lang, manual=False):
 
         position = None
         search_results = []
@@ -218,6 +227,10 @@ class MetaTubeAgent(Agent.Movies):
         return results
 
     def update(self, metadata, media, lang, force=False):
+        with self.agent_global_semaphore:
+            return self.update_media(metadata, media, lang, force)
+
+    def update_media(self, metadata, media, lang, force=False):
 
         if force:
             Log.Debug('Force metadata refreshing')
