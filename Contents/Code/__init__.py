@@ -7,7 +7,6 @@ from random import choice
 import utils
 from api_client import api
 from constants import *
-from localmedia import find_subtitles
 from provider_id import ProviderID
 from translator import translate_text
 
@@ -245,10 +244,6 @@ class MetaTubeAgent(Agent.Movies):
                 Log.Debug('Chinese subtitle detected for {filename}'
                           .format(filename=filename))
                 break
-
-        # Look for Subtitles
-        for part in utils.extra_media_parts(media):
-            find_subtitles(part)
 
         # Apply Preferences
         if Prefs[KEY_ENABLE_REAL_ACTOR_NAMES]:
