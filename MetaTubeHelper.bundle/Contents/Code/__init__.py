@@ -2,6 +2,8 @@
 
 import threading
 
+from localmedia import find_subtitles
+
 # plex debugging
 try:
     import plexhints  # noqa: F401
@@ -10,15 +12,8 @@ except ImportError:
 else:  # the code is running outside of Plex
     from plexhints.agent_kit import Agent, Media  # agent kit
     from plexhints.locale_kit import Locale  # locale kit
-    from plexhints.log_kit import Log  # log kit
     from plexhints.prefs_kit import Prefs  # prefs kit
     from plexhints.object_kit import MetadataSearchResult  # object kit
-
-try:
-    from localmedia import find_subtitles
-except ImportError:
-    def find_subtitles(part):
-        Log.Debug('Fake find_subtitles called: {file}'.format(file=part.file))
 
 
 # noinspection PyMethodMayBeStatic
