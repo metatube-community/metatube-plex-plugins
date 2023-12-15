@@ -21,6 +21,7 @@ DEFAULT_COUNTRY = 'Japan'
 
 # Default Template
 DEFAULT_TITLE_TEMPLATE = '{number} {title}'
+DEFAULT_TRAILER_TEMPLATE = 'サンプル動画 {original_title}'
 
 # Supported Languages
 LANGUAGES = [
