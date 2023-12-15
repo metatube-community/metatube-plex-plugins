@@ -188,7 +188,7 @@ class MetaTubeAgent(Agent.Movies):
                 Log.Warn('Movie provider filter enabled but never used')
 
         if not search_results:
-            Log.Warn('Movie not found: {items}'.format(items=vars(media)))
+            Log.Warn('Movie not found: {name}'.format(name=media.name))
             return results
 
         for i, m in enumerate(search_results):
@@ -285,7 +285,7 @@ class MetaTubeAgent(Agent.Movies):
         metadata.summary = m.summary
         metadata.original_title = original_title
 
-        # Set pid to tagline field
+        # Set pid to Tagline
         metadata.tagline = '{pid:s}'.format(pid=pid)
 
         # Content Rating
