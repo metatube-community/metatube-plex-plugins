@@ -1,0 +1,8 @@
+[
+  {
+    "id": "find_subtitles",
+    "label": "Find subtitles",
+    "type": "bool",
+    "default": "true"
+  }
+]
