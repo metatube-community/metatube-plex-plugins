@@ -61,7 +61,6 @@ VIDEO_EXTENSIONS = ('.3g2', '.3gp', '.asf', '.asx', '.avc', '.avi',
 # Preference Keys
 KEY_API_SERVER = 'api_server'
 KEY_API_TOKEN = 'api_token'
-KEY_FIND_SUBTITLES = 'find_subtitles'
 KEY_ENABLE_COLLECTIONS = 'enable_collections'
 KEY_ENABLE_DIRECTORS = 'enable_directors'
 KEY_ENABLE_RATINGS = 'enable_ratings'
