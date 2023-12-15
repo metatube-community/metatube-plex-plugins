@@ -247,8 +247,9 @@ class MetaTubeAgent(Agent.Movies):
                 break
 
         # Look for Subtitles
-        for part in utils.extra_media_parts(media):
-            find_subtitles(part)
+        if Prefs[KEY_FIND_SUBTITLES]:
+            for part in utils.extra_media_parts(media):
+                find_subtitles(part)
 
         # Apply Preferences
         if Prefs[KEY_ENABLE_REAL_ACTOR_NAMES]:

@@ -12,6 +12,12 @@
     "default": ""
   },
   {
+    "id": "find_subtitles",
+    "label": "Find subtitles",
+    "type": "bool",
+    "default": "false"
+  },
+  {
     "id": "enable_collections",
     "label": "Enable collections",
     "type": "bool",
