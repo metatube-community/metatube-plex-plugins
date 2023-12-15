@@ -407,9 +407,13 @@ class MetaTubeAgent(Agent.Movies):
             trailer = TrailerObject(
                 url='{plugin}://trailer/{b64url}'.format(
                     plugin=PLUGIN_NAME.lower(),
-                    b64url=urlsafe_b64encode(trailer_url)
+                    b64url=urlsafe_b64encode(trailer_url),
                 ),
-                title='Trailer: {number}'.format(number=m.number),
+                title=DEFAULT_TRAILER_TEMPLATE.format(
+                    number=m.number,
+                    title=m.title,
+                    original_title=original_title,
+                ),
                 thumb=thumb,
             )
             metadata.extras.add(trailer)
