@@ -19,15 +19,18 @@ jobs:
     steps:
       - name: Check out code
         uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
 
       - name: Generate Version
         id: shell
         run: |
+          echo "commit=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
           echo "version=$(date -u '+%Y.%-m%d.%-H%M.0')" >> $GITHUB_OUTPUT
 
       - name: Make bundle
         run: |
-          echo v${{ steps.shell.outputs.version }} > VERSION
+          echo v${{ steps.shell.outputs.version }}-${{ steps.shell.outputs.commit }} | tee VERSION
           mkdir -p MetaTube.bundle/
           mv LICENSE   MetaTube.bundle/
           mv VERSION   MetaTube.bundle/
