@@ -1,4 +1,4 @@
-# MetaTube Plex Plug-in
+# MetaTube Plex Plug-Ins
 
 **[English](./README.md) | 简体中文**
 
