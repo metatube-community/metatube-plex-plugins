@@ -265,7 +265,9 @@ class DefaultSubtitleHelper(SubtitleHelper):
         if language_match and len(language_match.groups()) == 1:
             language = language_match.groups()[0]
 
-        # Special support for chinese subtitle
+        # Extended Support:
+        # - Simplified Chinese Subtitles (chs)
+        # - Traditional Chinese Subtitles (cht)
         if language.lower() in ('chs', 'cht'):
             language = Locale.Language.Chinese
         else:
