@@ -71,7 +71,7 @@ class MetaTubeAgent(Agent.Movies):
     contributes_to = ['com.plexapp.agents.none']
 
     # Workaround:
-    # - using semaphores to prevent DB corruption
+    # - using a semaphore to prevent DB corruption
     agent_global_semaphore = threading.Semaphore(1)
 
     @staticmethod
