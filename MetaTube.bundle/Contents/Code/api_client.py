@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
+import utils
 from constants import *
-from utils import parse_date
 
 try:  # Python 2
     import httplib as http_status
@@ -48,8 +48,8 @@ class ActorInfoObject(ActorSearchResult):
         self.blood_type = data['blood_type']  # type: str
         self.measurements = data['measurements']  # type: str
         self.nationality = data['nationality']  # type: str
-        self.birthday = parse_date(data['birthday'])  # type: datetime
-        self.debut_date = parse_date(data['debut_date'])  # type: datetime
+        self.birthday = utils.parse_date(data['birthday'])  # type: datetime
+        self.debut_date = utils.parse_date(data['debut_date'])  # type: datetime
 
 
 class MovieSearchResult(BaseInfoObject):
@@ -61,7 +61,7 @@ class MovieSearchResult(BaseInfoObject):
         self.thumb_url = data['thumb_url']  # type: str
         self.score = float(data['score'])  # type: float
         self.actors = data.get('actors', [])  # type: list[str]
-        self.release_date = parse_date(data['release_date'])  # type: datetime
+        self.release_date = utils.parse_date(data['release_date'])  # type: datetime
 
 
 class MovieInfoObject(MovieSearchResult):
@@ -87,7 +87,7 @@ class MovieReviewObject(object):
         self.author = data['author']  # type: str
         self.comment = data['comment']  # type: str
         self.score = float(data['score'])  # type: float
-        self.date = parse_date(data['date'])  # type: datetime
+        self.date = utils.parse_date(data['date'])  # type: datetime
 
 
 class TranslationInfoObject(object):
@@ -137,7 +137,7 @@ class APIClient(object):
             headers['Authorization'] = 'Bearer {token}'.format(token=Prefs[KEY_API_TOKEN])
 
         with self.session.get(url=url, headers=headers) as r:
-            info = r.json()
+            info = utils.safe_unicode(r.json())
             data = info.get('data')
             error = info.get('error')
 
