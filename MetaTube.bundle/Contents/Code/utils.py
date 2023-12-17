@@ -15,6 +15,8 @@ except ImportError:  # Python 3
 # Python 3 compatible code
 if sys.version_info.major == 3:
     unicode = str
+    # noinspection PyShadowingBuiltins
+    filter = lambda f, t: u''.join(i for i in t if f(i))
 
 
 # Based on an answer by John Machin on Stack Overflow:
@@ -27,7 +29,7 @@ def filter_invalid_xml_chars(s):
                 0x10000 <= c <= 0x10FFFF or
                 c in (0x9, 0xA, 0xD))
 
-    return u''.join(c for c in s if is_valid_xml_char(c))
+    return filter(is_valid_xml_char, s)
 
 
 def safe_unicode(o):
