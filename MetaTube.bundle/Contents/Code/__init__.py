@@ -143,7 +143,18 @@ class MetaTubeAgent(Agent.Movies):
                     review.comment = translate_text(review.comment, lang=lang,
                                                     fallback=review.comment)
 
-    # noinspection PyMethodMayBeStatic
+    @staticmethod
+    def try_update_reviews(pid):
+        if not pid.update:
+            return
+
+        try:
+            return api.get_movie_reviews(provider=pid.provider, id=pid.id,
+                                         lazy=(pid.update is not True))
+        except Exception as e:
+            Log.Warn('Try to update reviews for {pid:s} failed: {error}'
+                     .format(pid=pid, error=e))
+
     def search(self, results, media, lang, manual=False):
 
         position = None
@@ -165,6 +176,7 @@ class MetaTubeAgent(Agent.Movies):
                 position = pid.position  # update position
                 search_results.append(api.get_movie_info(
                     provider=pid.provider, id=pid.id, lazy=(pid.update is not True)))
+                self.try_update_reviews(pid=pid)
             except ValueError:  # fallback to name based search
                 search_results = api.search_movie(q=media.name)
 
