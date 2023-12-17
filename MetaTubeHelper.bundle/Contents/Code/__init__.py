@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
 
-import threading
-
 from localmedia import find_local_subtitles
 
 # plex debugging
@@ -25,17 +23,12 @@ class MetaTubeHelper(Agent.Movies):
     contributes_to = ['com.plexapp.agents.metatube',
                       'com.plexapp.agents.none']
 
-    helper_global_semaphore = threading.Semaphore(1)
-
     def search(self, results, media, lang):
-        with self.helper_global_semaphore:
-            results.Append(MetadataSearchResult(id='null', score=100))
+        results.Append(MetadataSearchResult(id='null', score=100))
 
     def update(self, metadata, media, lang):
-        with self.helper_global_semaphore:
-
-            # Look for subtitles
-            if Prefs['find_local_subtitles']:
-                for item in media.items:
-                    for part in item.parts:
-                        find_local_subtitles(part)
+        # Look for subtitles
+        if Prefs['find_local_subtitles']:
+            for item in media.items:
+                for part in item.parts:
+                    find_local_subtitles(part)

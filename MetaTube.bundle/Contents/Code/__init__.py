@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 
-import threading
 from base64 import urlsafe_b64encode
 from random import choice
 
@@ -63,10 +62,6 @@ class MetaTubeAgent(Agent.Movies):
                     'com.plexapp.agents.lambda',
                     'com.plexapp.agents.xbmcnfo']
     contributes_to = ['com.plexapp.agents.none']
-
-    # Workaround:
-    # - using a semaphore to prevent DB corruption
-    agent_global_semaphore = threading.Semaphore(1)
 
     @staticmethod
     def get_rating_image(rating):
@@ -148,12 +143,8 @@ class MetaTubeAgent(Agent.Movies):
                     review.comment = translate_text(review.comment, lang=lang,
                                                     fallback=review.comment)
 
-    def search(self, results, media, lang, manual=False):
-        with self.agent_global_semaphore:
-            return self.search_media(results, media, lang, manual)
-
     # noinspection PyMethodMayBeStatic
-    def search_media(self, results, media, lang, manual=False):
+    def search(self, results, media, lang, manual=False):
 
         position = None
         search_results = []
@@ -218,10 +209,6 @@ class MetaTubeAgent(Agent.Movies):
         return results
 
     def update(self, metadata, media, lang, force=False):
-        with self.agent_global_semaphore:
-            return self.update_media(metadata, media, lang, force)
-
-    def update_media(self, metadata, media, lang, force=False):
 
         if force:
             Log.Debug('Force metadata refreshing')
