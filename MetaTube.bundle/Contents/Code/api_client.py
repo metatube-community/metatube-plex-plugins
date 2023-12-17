@@ -179,11 +179,11 @@ class APIClient(object):
                 lazy=lazy),
             require_auth=True))
 
-    def get_movie_reviews(self, provider, id, homepage=None):
+    def get_movie_reviews(self, provider, id, homepage=None, lazy=None):
         return [MovieReviewObject(**data) for data in self.get_json(
             url=self.prepare_url(
                 self.MOVIE_REVIEW_API, provider, id,
-                homepage=homepage),
+                homepage=homepage, lazy=lazy),
             require_auth=True)]
 
     def get_primary_image_url(self, provider, id,
