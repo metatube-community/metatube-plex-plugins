@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import os
 import re
+import sys
 from base64 import b64decode
 from datetime import datetime
 
@@ -10,6 +11,34 @@ try:  # Python 2
     from urllib import unquote
 except ImportError:  # Python 3
     from urllib.parse import unquote
+
+# Python 3 compatible code
+if sys.version_info.major == 3:
+    unicode = str
+
+
+# Based on an answer by John Machin on Stack Overflow:
+# - http://stackoverflow.com/questions/8733233/filtering-out-certain-bytes-in-python
+def filter_invalid_xml_chars(s):
+    def is_valid_xml_char(i):
+        c = ord(i)
+        return (0x20 <= c <= 0xD7FF or
+                0xE000 <= c <= 0xFFFD or
+                0x10000 <= c <= 0x10FFFF or
+                c in (0x9, 0xA, 0xD))
+
+    return u''.join(c for c in s if is_valid_xml_char(c))
+
+
+def safe_unicode(o):
+    if isinstance(o, unicode):
+        return filter_invalid_xml_chars(o)
+    elif isinstance(o, list):
+        return [safe_unicode(v) for v in o]
+    elif isinstance(o, dict):
+        return dict((k, safe_unicode(v)) for k, v in o.items())
+    else:
+        return o
 
 
 def average(a):
