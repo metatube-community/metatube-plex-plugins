@@ -288,7 +288,8 @@ class MetaTubeAgent(Agent.Movies):
         metadata.tagline = '{pid:s}'.format(pid=pid)
 
         # Content Rating
-        metadata.content_rating = DEFAULT_RATING
+        metadata.content_rating = DEFAULT_CONTENT_RATING
+        metadata.content_rating_age = DEFAULT_CONTENT_RATING_AGE
 
         # Producing Country
         metadata.countries.clear()
