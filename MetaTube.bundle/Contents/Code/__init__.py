@@ -248,14 +248,19 @@ class MetaTubeAgent(Agent.Movies):
         if Prefs[KEY_ENABLE_REAL_ACTOR_NAMES]:
             self.convert_to_real_actor_names(m)
 
-        if Prefs[KEY_ENABLE_ACTOR_SUBSTITUTION] and Prefs[KEY_ACTOR_SUBSTITUTION]:
+        if Prefs[KEY_ENABLE_TITLE_SUBSTITUTION] and Prefs[KEY_TITLE_SUBSTITUTION_TABLE]:
+            for k, v in utils.parse_table(Prefs[KEY_TITLE_SUBSTITUTION_TABLE],
+                                          sep='\n', b64=True).items():
+                m.title = m.title.replace(k, v)
+
+        if Prefs[KEY_ENABLE_ACTOR_SUBSTITUTION] and Prefs[KEY_ACTOR_SUBSTITUTION_TABLE]:
             m.actors = utils.table_substitute(
-                utils.parse_table(Prefs[KEY_ACTOR_SUBSTITUTION],
+                utils.parse_table(Prefs[KEY_ACTOR_SUBSTITUTION_TABLE],
                                   sep='\n', b64=True), m.actors)
 
-        if Prefs[KEY_ENABLE_GENRE_SUBSTITUTION] and Prefs[KEY_GENRE_SUBSTITUTION]:
+        if Prefs[KEY_ENABLE_GENRE_SUBSTITUTION] and Prefs[KEY_GENRE_SUBSTITUTION_TABLE]:
             m.genres = utils.table_substitute(
-                utils.parse_table(Prefs[KEY_GENRE_SUBSTITUTION],
+                utils.parse_table(Prefs[KEY_GENRE_SUBSTITUTION_TABLE],
                                   sep='\n', b64=True), m.genres)
 
         # Translate Info
