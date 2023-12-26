@@ -84,6 +84,18 @@
     "default": "{number} {title}"
   },
   {
+    "id": "enable_title_substitution",
+    "label": "Enable title substitution",
+    "type": "bool",
+    "default": "false"
+  },
+  {
+    "id": "title_substitution_table",
+    "label": "Title substitution table (Base64 encoding required)",
+    "type": "text",
+    "default": ""
+  },
+  {
     "id": "enable_actor_substitution",
     "label": "Enable actor substitution",
     "type": "bool",
