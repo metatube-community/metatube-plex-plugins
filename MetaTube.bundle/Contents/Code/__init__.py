@@ -204,7 +204,7 @@ class MetaTubeAgent(Agent.Movies):
                 id=pid,
                 name=pid,
                 year=(m.release_date.year
-                      if m.release_date.year > 1900 else None),
+                      if m.release_date.year >= 1900 else None),
                 score=int(100 - i),
                 lang=lang,  # user preferred language
                 thumb=api.get_primary_image_url(
@@ -232,7 +232,8 @@ class MetaTubeAgent(Agent.Movies):
         m = api.get_movie_info(provider=pid.provider, id=pid.id)
 
         original_title = m.title
-        release_date = m.release_date.strftime('%Y-%m-%d')
+        release_date = (m.release_date.strftime('%Y-%m-%d')
+                        if m.release_date.year >= 1900 else None)
 
         # Detect Chinese Subtitles
         chinese_subtitle_on = False
@@ -281,7 +282,7 @@ class MetaTubeAgent(Agent.Movies):
             director=m.director,
             actors=(' '.join(m.actors)),
             first_actor=(m.actors[0] if m.actors else ''),
-            year=m.release_date.year,
+            year=(m.release_date.year if release_date else None),
             date=release_date,
         )
 
@@ -305,7 +306,7 @@ class MetaTubeAgent(Agent.Movies):
             metadata.studio = m.maker
 
         # Release Date
-        if m.release_date.year > 1900:
+        if m.release_date.year >= 1900:
             metadata.originally_available_at = m.release_date
             metadata.year = m.release_date.year
 
