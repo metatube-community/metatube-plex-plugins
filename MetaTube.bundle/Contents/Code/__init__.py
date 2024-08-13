@@ -84,7 +84,7 @@ class MetaTubeAgent(Agent.Movies):
     @staticmethod
     def get_actor_image_url(name):
 
-        G_FRIENDS = 'GFriends'
+        G_FRIENDS = 'Gfriends'
 
         try:
             for actor in api.search_actor(q=name, provider=G_FRIENDS, fallback=False):
