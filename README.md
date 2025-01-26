@@ -7,7 +7,7 @@
 [![GitHub issues](https://img.shields.io/github/issues/metatube-community/metatube-plex-plugins?logo=github)](https://github.com/metatube-community/metatube-plex-plugins/issues)
 [![GitHub top language](https://img.shields.io/github/languages/top/metatube-community/metatube-plex-plugins?color=%23FFD43B&label=Python&logo=python)](https://github.com/metatube-community/metatube-plex-plugins/search?l=python)
 [![License](https://img.shields.io/github/license/metatube-community/metatube-plex-plugins)](https://github.com/metatube-community/metatube-plex-plugins/blob/main/LICENSE)
-[![Telegram Group](https://img.shields.io/badge/Telegram-2CA5E0?logo=telegram&logoColor=white)](https://t.me/MetaTubePlugin)
+[![GitHub Stars](https://img.shields.io/github/stars/metatube-community/jellyfin-plugin-metatube?style=flat)](https://github.com/metatube-community/jellyfin-plugin-metatube)
 [![GitHub all releases](https://img.shields.io/github/downloads/metatube-community/metatube-plex-plugins/total)](https://github.com/metatube-community/metatube-plex-plugins)
 [![Docker Pulls](https://img.shields.io/docker/pulls/metatube/metatube-server?logo=docker)](https://hub.docker.com/r/metatube/metatube-server)
 [![Releases](https://img.shields.io/github/v/release/metatube-community/metatube-plex-plugins?display_name=release&logo=smartthings)](https://github.com/metatube-community/metatube-plex-plugins/releases)
