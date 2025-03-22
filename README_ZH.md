@@ -9,7 +9,6 @@
 [![License](https://img.shields.io/github/license/metatube-community/metatube-plex-plugins)](https://github.com/metatube-community/metatube-plex-plugins/blob/main/LICENSE)
 [![GitHub Stars](https://img.shields.io/github/stars/metatube-community/jellyfin-plugin-metatube?style=flat)](https://github.com/metatube-community/jellyfin-plugin-metatube)
 [![GitHub all releases](https://img.shields.io/github/downloads/metatube-community/metatube-plex-plugins/total)](https://github.com/metatube-community/metatube-plex-plugins)
-[![Docker Pulls](https://img.shields.io/docker/pulls/metatube/metatube-server?logo=docker)](https://hub.docker.com/r/metatube/metatube-server)
 [![Releases](https://img.shields.io/github/v/release/metatube-community/metatube-plex-plugins?display_name=release&logo=smartthings)](https://github.com/metatube-community/metatube-plex-plugins/releases)
 
 ## 特性
@@ -38,7 +37,7 @@ _注意：本项目仅支持 Plex 最新的稳定版本。_
 
 ## 社区
 
-有任何问题欢迎来 [Discussions](https://github.com/metatube-community/metatube-plex-plugins/discussions) 提问讨论，或者加入 [TG群](https://t.me/MetaTubePlugin)。
+有任何问题欢迎来 [Discussions](https://github.com/metatube-community/metatube-plex-plugins/discussions) 提问讨论。
 
 ## 许可
 
